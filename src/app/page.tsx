@@ -137,12 +137,12 @@ export default function Home() {
               Join thousands of restaurants already using QR Order to provide better service to their customers.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="btn-primary">
+              <a href="/auth/signup" className="btn-primary text-center">
                 Get Started for Restaurants
-              </button>
-              <button className="btn-secondary">
-                Learn More
-              </button>
+              </a>
+              <a href="/auth/signin" className="btn-secondary text-center">
+                Restaurant Sign In
+              </a>
             </div>
           </div>
         </div>
