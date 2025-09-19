@@ -76,6 +76,29 @@ export default function DashboardPage() {
               <p className="text-gray-600 mb-8">
                 This is where you&apos;ll manage your restaurant, tables, menu, and orders.
               </p>
+              
+              {/* Restaurant Info */}
+              <div className="bg-white shadow rounded-lg p-6 mb-6">
+                <h2 className="text-lg font-medium text-gray-900 mb-4">Restaurant Information</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Restaurant ID</label>
+                    <p className="mt-1 text-sm text-gray-900 font-mono bg-gray-50 p-2 rounded">{session.user?.id}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Public Menu URL</label>
+                    <p className="mt-1 text-sm text-blue-600 font-mono bg-gray-50 p-2 rounded break-all">
+                      {typeof window !== 'undefined' ? `${window.location.origin}/menu/${session.user?.id}` : 'Loading...'}
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <p className="text-sm text-gray-600">
+                    💡 <strong>Tip:</strong> Share this URL with customers or use it to test your live menu. 
+                    Make sure to publish your menu first in Menu Management.
+                  </p>
+                </div>
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
                 <button
                   onClick={() => router.push('/dashboard/tables')}
