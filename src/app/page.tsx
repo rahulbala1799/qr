@@ -99,7 +99,7 @@ export default function Home() {
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Scan & Order</h3>
               <p className="text-gray-600">
-                Simply scan the QR code on your table to instantly access the restaurant's menu and place your order.
+                Simply scan the QR code on your table to instantly access the restaurant&apos;s menu and place your order.
               </p>
             </div>
 
