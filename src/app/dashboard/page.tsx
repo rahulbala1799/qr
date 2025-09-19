@@ -90,7 +90,10 @@ export default function DashboardPage() {
                   <p className="text-gray-600 text-sm">Create and manage your restaurant tables with QR codes</p>
                 </button>
 
-                <div className="bg-white p-6 rounded-lg shadow-md">
+                <button
+                  onClick={() => router.push('/dashboard/menu')}
+                  className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer w-full"
+                >
                   <div className="w-12 h-12 bg-secondary-100 rounded-lg flex items-center justify-center mx-auto mb-4">
                     <svg className="w-6 h-6 text-secondary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -98,7 +101,7 @@ export default function DashboardPage() {
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">Menu Management</h3>
                   <p className="text-gray-600 text-sm">Add, edit, and organize your restaurant menu items</p>
-                </div>
+                </button>
 
                 <div className="bg-white p-6 rounded-lg shadow-md">
                   <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4">
