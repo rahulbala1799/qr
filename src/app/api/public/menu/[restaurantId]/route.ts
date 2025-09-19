@@ -8,7 +8,7 @@ export async function GET(
 ) {
   try {
     // Get the restaurant and verify it's published
-    const restaurant = await prisma.restaurant.findUnique({
+    const restaurant = await prisma.restaurant.findFirst({
       where: { 
         id: params.restaurantId,
         isPublished: true,
