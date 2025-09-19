@@ -9,7 +9,7 @@ interface MenuItem {
   id: string
   name: string
   description: string | null
-  price: number
+  price: number | string
   category: string
   image: string | null
   isAvailable: boolean
@@ -28,6 +28,12 @@ export default function MenuPage() {
   const [success, setSuccess] = useState('')
   const [editingItem, setEditingItem] = useState<string | null>(null)
   const [showCreateForm, setShowCreateForm] = useState(false)
+
+  // Helper function to safely convert price to number
+  const formatPrice = (price: number | string): string => {
+    const numPrice = typeof price === 'string' ? parseFloat(price) : price
+    return isNaN(numPrice) ? '0.00' : numPrice.toFixed(2)
+  }
 
   // Form states
   const [formData, setFormData] = useState({
@@ -166,7 +172,7 @@ export default function MenuPage() {
     setFormData({
       name: item.name,
       description: item.description || '',
-      price: item.price.toString(),
+      price: formatPrice(item.price),
       category: item.category,
       image: item.image || ''
     })
@@ -393,7 +399,7 @@ export default function MenuPage() {
                           {item.description && (
                             <p className="text-sm text-gray-600 mt-1">{item.description}</p>
                           )}
-                          <p className="text-lg font-semibold text-primary-600">${item.price.toFixed(2)}</p>
+                          <p className="text-lg font-semibold text-primary-600">${formatPrice(item.price)}</p>
                         </div>
                       </div>
                       <div className="flex items-center space-x-2">
