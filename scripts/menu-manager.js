@@ -85,6 +85,111 @@ const menuTemplates = {
     { name: "Chocolate Brownie", description: "Warm chocolate brownie with vanilla ice cream", price: 6.95, category: "Desserts" },
     { name: "Apple Pie", description: "Classic American apple pie with cinnamon", price: 5.95, category: "Desserts" },
     { name: "Milkshake", description: "Thick vanilla, chocolate, or strawberry milkshake", price: 4.95, category: "Desserts" }
+  ],
+
+  fastfood: [
+    // Starters
+    { name: "Hotline Rings", description: "Golden fried, thick-cut Onion Rings. Contains Gluten (Wheat).", price: 6.50, category: "Starters" },
+    { name: "Popcorn Chicken", description: "Pop it like it's hot. Contains Gluten (Wheat).", price: 7.50, category: "Starters" },
+    { name: "Halloumi Lover", description: "Fried Halloumi Sticks with signature Toppings. Contains Dairy.", price: 7.50, category: "Starters" },
+    { name: "Sliders", description: "3 Mini Beef Patties topped with crispy Onions, Cheese & Pickles on toasted Mini Buns. Contains Gluten (Wheat), Eggs, Milk", price: 8.50, category: "Starters" },
+    { name: "Love Me Tenders", description: "Fresh Chicken Strips seasoned just right. Contains Gluten (Wheat).", price: 7.50, category: "Starters" },
+    { name: "Put a Wing on It", description: "Juicy Buffalo Wings bursting with flavour served with Blue Cheese Dip.", price: 7.50, category: "Starters" },
+    { name: "Let's Nacho", description: "Hot, crispy Tortilla Chips topped with our house Sides. Contains Gluten (Wheat).", price: 8.50, category: "Starters" },
+    
+    // Burgers
+    { name: "Original Burger", description: "Double Beef Patties topped with Cheese, Lettuce, Tomatoes, Onions & Secret Burger Sauce. Contains Gluten (Wheat), Eggs, Milk", price: 10.50, category: "Burgers" },
+    { name: "The Guac Burger", description: "Double Beef Burger topped with Guacamole, Monterey Jack Cheese & Ranch Sauce. Contains Gluten (Wheat), Eggs, Milk", price: 13.50, category: "Burgers" },
+    { name: "Smoky Bandit Burger", description: "Double Beef Burger topped with Crispy Fried Onions, Smoky Apple Wood Cheese & House BBQ Sauce. Contains Gluten (Wheat), Eggs, Milk", price: 12.50, category: "Burgers" },
+    { name: "The Italian Job Burger", description: "Grilled Chicken Breast topped with Pico De Gallo, Avocado & Pesto Mayonnaise. Contains Gluten (Wheat), Eggs, Milk", price: 12.50, category: "Burgers" },
+    { name: "The Classic Burger", description: "Crisp Fillet topped with Melted Cheese Lettuce & Burger Sauce. Contains Gluten (Wheat), Eggs, Milk", price: 10.50, category: "Burgers" },
+    { name: "Chipotle Crunch Burger", description: "Double Beef Burger topped with Crunchy Homemade Onion Rings, Spicy Cheese & Chipotle Sauce. Contains Gluten (Wheat), Eggs, Milk", price: 12.50, category: "Burgers" },
+    { name: "Shroom Service Burger", description: "Double Beef Burger topped with Sautéed Mushrooms, Caramelized Onions & Peppers with Swiss Cheese & Dijon Mustard Mayonnaise. Contains Gluten (Wheat), Eggs, Milk", price: 13.50, category: "Burgers" },
+    { name: "Angry Bird Burger", description: "Fried Buttermilk Battered Chicken Breast topped with House Slaw, Cheese, Jalapeños & Chilli Mayonnaise. Contains Gluten (Wheat), Eggs, Milk", price: 12.50, category: "Burgers" },
+    { name: "O'Falafel Burger", description: "Homemade Chickpea Patty topped with Halloumi Grilled Red Peppers & Harissa Mayonnaise. Contains Gluten (Wheat), Eggs, Milk", price: 9.99, category: "Burgers" },
+    { name: "Eggcelence Burger", description: "Double Beef Patty with a Free-Range Fried Egg, Bacon Rashers, Crispy Onions, Hash Brown, Cheese, Tomatoes, Lettuce & Cashel Blue Sauce. Contains Gluten (Wheat), Eggs, Milk", price: 14.99, category: "Burgers" },
+    { name: "Chuck E Cheese Burger", description: "Triple Beef Patty topped with Pepperoni, Hotdogs, Bacon Rashers & Gouda Cheese with Mustard & Ketchup. Contains Gluten (Wheat), Eggs, Milk", price: 14.99, category: "Burgers" },
+    { name: "Double or Nothing Burger", description: "Popular!! Fried or grilled? Why not one of each? Sink your teeth into our loaded fried & grilled Chicken burger with Smoked Cheese, Red Onions, Lettuce Cajun Mayonnaise & Hot BBQ Sauce. Contains Gluten (Wheat), Eggs, Milk", price: 14.99, category: "Burgers" },
+    { name: "Big Hulk Burger", description: "Triple Beef Patties topped with Cheese, Pickles, Tomatoes, Onions & Secret Sauce. Contains Gluten (Wheat), Eggs, Milk", price: 13.99, category: "Burgers" },
+    { name: "The Tower Burger", description: "Crisp Fillet topped with Hash Browns, Bacon & Melted Cheese, Fried Onions & 2 Tenders. Contains Gluten (Wheat), Eggs, Milk", price: 13.99, category: "Burgers" },
+    { name: "Pleased to Meat You Burger", description: "Folded Pizza with Beef Mince, Red Onions, Peppers & Jalapeños. Contains Gluten (Wheat), Eggs, Milk", price: 14.99, category: "Burgers" },
+    
+    // Wraps
+    { name: "Straight Outta' Philly Wrap", description: "Slices of Tender Beef Steak topped with Peppers, Onions, & smothered in Cheese Sauce. Contains Gluten (Wheat), Eggs, Milk", price: 12.99, category: "Wraps" },
+    { name: "Boom Chicka Boom Wrap", description: "Popular!! Grilled Chicken Kebab Pieces with Onions, Tomatoes, Lettuce & Homemade Kebab Sauce. Contains Gluten (Wheat), Eggs, Milk", price: 11.99, category: "Wraps" },
+    { name: "The Mashup Wrap", description: "Buttermilk Fried Chicken with Crispy Bacon, Greens & Secret Sauce. Contains Gluten (Wheat), Eggs, Milk", price: 10.50, category: "Wraps" },
+    { name: "Donatello Doner Wrap", description: "Donner Meat paired with Onions, Tomatoes, Lettuce & Homemade Kebab Sauce. Contains Gluten (Wheat), Eggs, Milk", price: 11.99, category: "Wraps" },
+    { name: "The Rooster Wrap", description: "Crispy Chicken Goujon with Cheese, Salad & choice of your Sauce (BBQ or Sweet Chilli or Peri Peri). Contains Gluten (Wheat), Eggs, Milk", price: 10.50, category: "Wraps" },
+    { name: "Fella Falafel Wrap", description: "Homemade Falafel Patty topped with Hummus Salad & House Dressing. Contains Gluten (Wheat), Eggs, Milk", price: 9.50, category: "Wraps" },
+    
+    // Pizza
+    { name: "Cheese Please (The Classic)", description: "Loaded with Mozzarella Cheese, a sprinkle of mix herbs. Contains Gluten (Wheat), Eggs, Milk", price: 9.99, category: "Pizza" },
+    { name: "Tandoori Nights (Asian)", description: "Asian style Tandoori Chicken, topped with Red Onions, Peppers, Sweetcorn, Jalapeños. Contains Gluten (Wheat), Eggs, Milk", price: 9.99, category: "Pizza" },
+    { name: "Farm House (Real Fresh)", description: "A fresh Veggies overload of Onions, crunchy Peppers, succulent Mushrooms, juicy Tomatoes & Sweetcorn. Contains Gluten (Wheat), Eggs, Milk", price: 9.99, category: "Pizza" },
+    { name: "Show Me the Pepperoni (American)", description: "Only for passionate Pepperoni fans. Contains Gluten (Wheat), Eggs, Milk", price: 9.99, category: "Pizza" },
+    { name: "Pollo (Tuscan)", description: "Smoked Chicken, Sausage, Olives, Green Peppers, Mushrooms. Contains Gluten (Wheat), Eggs, Milk", price: 9.99, category: "Pizza" },
+    { name: "Blazing Behari (Pakistani)", description: "Behari Masala marinated Chicken, Onions & Green Chillies topped with Mozzarella Cheese. Contains Gluten (Wheat), Eggs, Milk", price: 9.99, category: "Pizza" },
+    { name: "Capriciosa (Hawaiian)", description: "Classic Ham & Mushrooms. Contains Gluten (Wheat), Eggs, Milk", price: 9.99, category: "Pizza" },
+    { name: "Smokin' Hot (Mexican)", description: "Mince, Jalapeños, Onions, Mixed Peppers with a sprinkle of crushed Chilli Flakes. Contains Gluten (Wheat), Eggs, Milk", price: 9.99, category: "Pizza" },
+    { name: "Pizza À Portuguesa (Portuguese)", description: "Fire up your taste buds with Spiced Chicken, Olives, Jalapeños & drizzled with Hot Peri Peri Sauce. Contains Gluten (Wheat), Eggs, Milk", price: 9.99, category: "Pizza" },
+    { name: "Gyro (Greek)", description: "Carved Donner Kebab Meat topped with Mixed Salad, a drizzle of Garlic Acile. Contains Gluten (Wheat), Eggs, Milk", price: 9.99, category: "Pizza" },
+    { name: "Achari (Picklish)", description: "Chilli Chicken, onions, peppers, olives, jalapenos and pickle. Contains Gluten (Wheat), Eggs, Milk", price: 9.99, category: "Pizza" },
+    { name: "Ranch Sicilian Pizza", description: "Spicy Pulled Beef, Bacon, Mushrooms, Cherry Tomatoes, Peppers & Black Olives topped with Ranch Sauce & a touch of Garlic Oil. Contains Gluten (Wheat), Eggs, Milk", price: 10.99, category: "Pizza" },
+    { name: "Paneer Tikka", description: "Spicy Paneer, red onions, tomatoes, jalapenos and topped with spicy mayo. Contains Gluten (Wheat), Eggs, Milk", price: 10.99, category: "Pizza" },
+    
+    // Calzone
+    { name: "Chicken Fiesta Calzone", description: "Folded Pizza with Chicken, Spinach, Mushrooms, Olives & Onions. Contains Gluten (Wheat), Eggs, Milk", price: 11.99, category: "Calzone" },
+    { name: "Donner Trump Calzone", description: "10\". Why have abs when you can have Kebabs? Folded Pizza loaded with Donner Meat. Contains Gluten (Wheat), Eggs, Milk", price: 11.99, category: "Calzone" },
+    { name: "Prince of Mince Calzone", description: "Folded Pizza with Beef Mince, Red Onions, Peppers & Jalapeños. Contains Gluten (Wheat), Eggs, Milk", price: 11.99, category: "Calzone" },
+    { name: "Desi Fold", description: "Spicy chicken Tikka, Jalapenos, Onions and peppers", price: 11.99, category: "Calzone" },
+    
+    // Sides
+    { name: "Fiery Chicken Wings", description: "Tossed in Melted Butter & Hot Sauce.", price: 7.50, category: "Sides" },
+    { name: "Wild Wedges", description: "Seasoned to perfection.", price: 6.50, category: "Sides" },
+    { name: "Garlic Cheesy Bread", description: "Hot & Cheesy, enough said. Contains Gluten (Wheat), Eggs, Milk", price: 6.50, category: "Sides" },
+    { name: "Crispy Onion Rings", description: "Contains Gluten (Wheat)", price: 6.50, category: "Sides" },
+    { name: "Popcorn Bites", description: "Contains Gluten (Wheat)", price: 6.50, category: "Sides" },
+    { name: "Love the Way You Fry", description: "Classic fries", price: 5.00, category: "Sides" },
+    { name: "Masala Punched", description: "Spiced fries", price: 6.50, category: "Sides" },
+    { name: "Dead in Cheese", description: "Cheesy fries. Contains Milk", price: 6.50, category: "Sides" },
+    { name: "Mix It Up", description: "Mixed fries", price: 5.99, category: "Sides" },
+    { name: "Garlic Cheese Fries", description: "Garlic and cheese fries. Contains Eggs, Milk", price: 6.50, category: "Sides" },
+    { name: "Chic Bit", description: "Chicken bites. Contains Gluten (Wheat)", price: 9.99, category: "Sides" },
+    { name: "Gravy One", description: "Fries with gravy. Contains Gluten (Wheat)", price: 5.50, category: "Sides" },
+    { name: "Tub of Coleslaw", description: "Contains Eggs", price: 3.50, category: "Sides" },
+    { name: "Tub of Gravy", description: "Contains Gluten (Wheat)", price: 3.50, category: "Sides" },
+    
+    // Desserts
+    { name: "Nutella Rolls", description: "Contains Gluten (Wheat)", price: 6.50, category: "Desserts" },
+    { name: "Selection of Ice Cream", description: "Various ice cream flavors", price: 5.50, category: "Desserts" },
+    { name: "Sweetie Pie", description: "Contains Gluten (Wheat)", price: 6.50, category: "Desserts" },
+    { name: "Cookie Monster", description: "Soft Gooey, chocolate chip cookies", price: 6.50, category: "Desserts" },
+    
+    // Sauces
+    { name: "Garlic Sauce", description: "Contains Eggs", price: 1.50, category: "Sauces" },
+    { name: "Peri Peri Mayonnaise", description: "Contains Eggs", price: 1.50, category: "Sauces" },
+    { name: "Cheese Sauce", description: "Contains Milk", price: 1.50, category: "Sauces" },
+    { name: "Curry Sauce", description: "Spicy curry sauce", price: 1.50, category: "Sauces" },
+    { name: "Hot Sauce", description: "Spicy hot sauce", price: 1.50, category: "Sauces" },
+    { name: "Sweet Chilli Sauce", description: "Sweet and spicy", price: 1.50, category: "Sauces" },
+    { name: "Ranch Sauce", description: "Contains Eggs, Milk", price: 1.50, category: "Sauces" },
+    { name: "Mustard Mayonnaise", description: "Contains Eggs, Mustard", price: 1.50, category: "Sauces" },
+    { name: "BBQ Sauce", description: "Classic BBQ flavor", price: 1.50, category: "Sauces" },
+    
+    // Milkshakes
+    { name: "Oreo Crush Milkshake", description: "Oreo cookie milkshake", price: 6.50, category: "Milkshakes" },
+    { name: "Strawberry Sensation Milkshake", description: "Strawberry milkshake", price: 6.50, category: "Milkshakes" },
+    { name: "Nutty Nutella Milkshake", description: "Nutella milkshake", price: 6.50, category: "Milkshakes" },
+    { name: "Fudgey Chocolate Milkshake", description: "Chocolate milkshake", price: 6.50, category: "Milkshakes" },
+    { name: "Mango Man Milkshake", description: "Mango milkshake", price: 6.50, category: "Milkshakes" },
+    
+    // Drinks
+    { name: "Coca-Cola Classic 330ml", description: "Soda", price: 2.50, category: "Drinks" },
+    { name: "Fanta Orange 330ml", description: "Soda", price: 2.50, category: "Drinks" },
+    { name: "Water", description: "Still water", price: 2.50, category: "Drinks" },
+    { name: "Diet Coke 330ml", description: "Soda", price: 2.50, category: "Drinks" },
+    { name: "7 Up 330ml", description: "Soda", price: 2.50, category: "Drinks" },
+    { name: "Absolute Healthy Drink", description: "Healthy drink option", price: 3.50, category: "Drinks" }
   ]
 }
 
@@ -163,12 +268,12 @@ async function main() {
   
   if (args.length < 1) {
     console.log('Usage: node menu-manager.js <restaurant-id> [menu-type] [publish]')
-    console.log('Menu types: irish, italian, american')
+    console.log('Menu types: irish, italian, american, fastfood')
     console.log('Publish: true/false (default: true)')
     console.log('')
     console.log('Examples:')
-    console.log('  node menu-manager.js cmfqyolxc0000i904t9o3vrb4 irish true')
-    console.log('  node menu-manager.js cmfqyolxc0000i904t9o3vrb4 italian false')
+    console.log('  node menu-manager.js cmfqyolxc0000i904t9o3vrb4 fastfood true')
+    console.log('  node menu-manager.js cmfqyolxc0000i904t9o3vrb4 irish false')
     return
   }
 
