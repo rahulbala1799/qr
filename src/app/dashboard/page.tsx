@@ -126,7 +126,10 @@ export default function DashboardPage() {
                   <p className="text-gray-600 text-sm">Add, edit, and organize your restaurant menu items</p>
                 </button>
 
-                <div className="bg-white p-6 rounded-lg shadow-md">
+                <button
+                  onClick={() => router.push('/dashboard/orders')}
+                  className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer w-full"
+                >
                   <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4">
                     <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -134,7 +137,7 @@ export default function DashboardPage() {
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">Order Management</h3>
                   <p className="text-gray-600 text-sm">View and manage incoming orders from customers</p>
-                </div>
+                </button>
               </div>
             </div>
           </div>
