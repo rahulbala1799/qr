@@ -173,66 +173,8 @@ export default function TablesPage() {
   }
 
   const generateQRCode = async (tableId: string) => {
-    try {
-      const response = await fetch(`/api/tables/${tableId}/qrcode`)
-      if (response.ok) {
-        const data = await response.json()
-        // Open QR code in new window for printing
-        const newWindow = window.open('', '_blank')
-        if (newWindow) {
-          newWindow.document.write(`
-            <html>
-              <head>
-                <title>QR Code - Table ${data.tableNumber}</title>
-                <style>
-                  body { 
-                    font-family: Arial, sans-serif; 
-                    text-align: center; 
-                    padding: 20px;
-                  }
-                  .qr-container {
-                    max-width: 400px;
-                    margin: 0 auto;
-                  }
-                  .qr-code {
-                    border: 2px solid #000;
-                    margin: 20px 0;
-                  }
-                  .table-info {
-                    background: #f5f5f5;
-                    padding: 15px;
-                    border-radius: 8px;
-                    margin: 20px 0;
-                  }
-                  @media print {
-                    body { margin: 0; }
-                    .no-print { display: none; }
-                  }
-                </style>
-              </head>
-              <body>
-                <div class="qr-container">
-                  <h1>Table ${data.tableNumber}</h1>
-                  <div class="table-info">
-                    <p><strong>Scan this QR code to order</strong></p>
-                    <p>Customers can scan this code to view the menu and place orders</p>
-                  </div>
-                  <img src="${data.qrCode}" alt="QR Code for Table ${data.tableNumber}" class="qr-code" />
-                  <div class="table-info">
-                    <p><strong>URL:</strong> ${data.qrUrl}</p>
-                  </div>
-                  <button class="no-print" onclick="window.print()" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">Print QR Code</button>
-                </div>
-              </body>
-            </html>
-          `)
-        }
-      } else {
-        setError('Failed to generate QR code')
-      }
-    } catch (error) {
-      setError('Error generating QR code')
-    }
+    // Navigate to the proper QR code page
+    router.push(`/dashboard/tables/qr/${tableId}`)
   }
 
   if (status === 'loading' || isLoading) {
@@ -283,7 +225,17 @@ export default function TablesPage() {
 
           {/* Create New Table Form */}
           <div className="bg-white shadow rounded-lg p-6 mb-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">Add New Table</h2>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-medium text-gray-900">Add New Table</h2>
+              {tables.length > 0 && (
+                <button
+                  onClick={() => router.push('/dashboard/tables/bulk-qr')}
+                  className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+                >
+                  Generate Bulk QR Codes
+                </button>
+              )}
+            </div>
             <form onSubmit={createTable} className="flex gap-4">
               <div className="flex-1">
                 <input
