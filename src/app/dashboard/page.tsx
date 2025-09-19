@@ -22,8 +22,25 @@ export default function DashboardPage() {
     )
   }
 
+  if (status === 'unauthenticated') {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Redirecting to sign in...</h2>
+        </div>
+      </div>
+    )
+  }
+
   if (!session) {
-    return null
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">No session found</h2>
+          <p className="text-gray-600">Please sign in to access the dashboard.</p>
+        </div>
+      </div>
+    )
   }
 
   return (
