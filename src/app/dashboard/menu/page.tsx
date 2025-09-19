@@ -28,6 +28,9 @@ export default function MenuPage() {
   const [success, setSuccess] = useState('')
   const [editingItem, setEditingItem] = useState<string | null>(null)
   const [showCreateForm, setShowCreateForm] = useState(false)
+  const [isPublished, setIsPublished] = useState(false)
+  const [availableMenuItemsCount, setAvailableMenuItemsCount] = useState(0)
+  const [isPublishing, setIsPublishing] = useState(false)
 
   // Helper function to safely convert price to number
   const formatPrice = (price: number | string): string => {
@@ -49,6 +52,7 @@ export default function MenuPage() {
       router.push('/auth/signin')
     } else if (status === 'authenticated') {
       fetchMenuItems()
+      fetchPublishStatus()
     }
   }, [status, router])
 
@@ -67,6 +71,50 @@ export default function MenuPage() {
       setError('Error fetching menu items')
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const fetchPublishStatus = async () => {
+    try {
+      const response = await fetch('/api/restaurant/publish')
+      if (response.ok) {
+        const data = await response.json()
+        setIsPublished(data.restaurant.isPublished)
+        setAvailableMenuItemsCount(data.restaurant.availableMenuItemsCount)
+      }
+    } catch (error) {
+      console.error('Error fetching publish status:', error)
+    }
+  }
+
+  const togglePublishStatus = async () => {
+    setIsPublishing(true)
+    setError('')
+
+    try {
+      const response = await fetch('/api/restaurant/publish', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          isPublished: !isPublished
+        }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setIsPublished(!isPublished)
+        setSuccess(data.message)
+        setTimeout(() => setSuccess(''), 3000)
+      } else {
+        setError(data.error || 'Failed to update publish status')
+      }
+    } catch (error) {
+      setError('Error updating publish status')
+    } finally {
+      setIsPublishing(false)
     }
   }
 
@@ -234,6 +282,48 @@ export default function MenuPage() {
               {error}
             </div>
           )}
+
+          {/* Publish Status */}
+          <div className="bg-white shadow rounded-lg p-6 mb-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-medium text-gray-900">Menu Status</h2>
+                <p className="text-sm text-gray-600 mt-1">
+                  {isPublished ? 'Your menu is live and visible to customers' : 'Your menu is not published yet'}
+                </p>
+                <p className="text-sm text-gray-500 mt-1">
+                  Available menu items: {availableMenuItemsCount}
+                </p>
+              </div>
+              <div className="flex items-center space-x-4">
+                <div className={`px-3 py-1 rounded-full text-sm font-medium ${
+                  isPublished 
+                    ? 'bg-green-100 text-green-800' 
+                    : 'bg-gray-100 text-gray-800'
+                }`}>
+                  {isPublished ? 'Published' : 'Draft'}
+                </div>
+                <button
+                  onClick={togglePublishStatus}
+                  disabled={isPublishing || availableMenuItemsCount === 0}
+                  className={`px-4 py-2 rounded-md text-sm font-medium ${
+                    isPublished
+                      ? 'bg-red-600 text-white hover:bg-red-700'
+                      : 'bg-green-600 text-white hover:bg-green-700'
+                  } disabled:opacity-50 disabled:cursor-not-allowed`}
+                >
+                  {isPublishing ? 'Updating...' : isPublished ? 'Unpublish Menu' : 'Publish Menu'}
+                </button>
+              </div>
+            </div>
+            {availableMenuItemsCount === 0 && (
+              <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+                <p className="text-sm text-yellow-800">
+                  You need at least one available menu item to publish your menu.
+                </p>
+              </div>
+            )}
+          </div>
 
           {/* Category Filter */}
           <div className="bg-white shadow rounded-lg p-6 mb-6">
