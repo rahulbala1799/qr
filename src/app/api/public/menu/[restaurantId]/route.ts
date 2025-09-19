@@ -21,7 +21,8 @@ export async function GET(
         address: true,
         phone: true,
         website: true,
-        logo: true
+        logo: true,
+        currency: true
       }
     })
 

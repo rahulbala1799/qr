@@ -21,6 +21,7 @@ model Restaurant {
   phone       String
   website     String?
   logo        String?
+  currency    String   @default("€")
   isActive    Boolean  @default(true)
   isPublished Boolean  @default(false)
   createdAt   DateTime @default(now())

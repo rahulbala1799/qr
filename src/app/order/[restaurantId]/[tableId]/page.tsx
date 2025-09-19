@@ -31,6 +31,7 @@ interface Restaurant {
   phone: string
   website: string | null
   logo: string | null
+  currency: string
 }
 
 export default function TableOrderPage() {
@@ -245,7 +246,8 @@ export default function TableOrderPage() {
               onClick={() => setShowCart(!showCart)}
               className="relative bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors"
             >
-              Cart ({cart.length})
+              <span className="hidden sm:inline">Cart ({cart.length})</span>
+              <span className="sm:hidden">Cart</span>
               {cart.length > 0 && (
                 <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                   {cart.reduce((sum, item) => sum + item.quantity, 0)}
@@ -311,7 +313,7 @@ export default function TableOrderPage() {
                                   )}
                                 </div>
                                 <div className="text-right">
-                                  <p className="text-lg font-bold text-primary-600">€{item.price.toFixed(2)}</p>
+                                  <p className="text-lg font-bold text-primary-600">{restaurant?.currency || '€'}{item.price.toFixed(2)}</p>
                                   <button
                                     onClick={() => addToCart(item)}
                                     className="mt-2 bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors text-sm"
@@ -333,9 +335,24 @@ export default function TableOrderPage() {
 
           {/* Cart Sidebar */}
           <div className="lg:col-span-1">
-            <div className={`bg-white rounded-lg shadow-sm ${showCart ? 'block' : 'hidden lg:block'}`}>
+            {/* Mobile Cart Overlay */}
+            {showCart && (
+              <div className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40" onClick={() => setShowCart(false)}></div>
+            )}
+            
+            <div className={`bg-white rounded-lg shadow-sm ${showCart ? 'block' : 'hidden lg:block'} ${showCart ? 'fixed right-0 top-0 h-full w-full max-w-md bg-white shadow-xl z-50 lg:relative lg:shadow-sm lg:max-w-none lg:w-auto lg:h-auto' : ''}`}>
               <div className="p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">Your Order</h2>
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-lg font-semibold text-gray-900">Your Order</h2>
+                  <button
+                    onClick={() => setShowCart(false)}
+                    className="lg:hidden text-gray-500 hover:text-gray-700"
+                  >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
                 
                 {/* Table Info */}
                 <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
@@ -353,7 +370,7 @@ export default function TableOrderPage() {
                           <div className="flex justify-between items-start">
                             <div className="flex-1">
                               <h3 className="font-medium text-gray-900">{item.menuItem.name}</h3>
-                              <p className="text-sm text-gray-600">€{item.menuItem.price.toFixed(2)} each</p>
+                              <p className="text-sm text-gray-600">{restaurant?.currency || '€'}{item.menuItem.price.toFixed(2)} each</p>
                             </div>
                             <button
                               onClick={() => removeFromCart(item.menuItem.id)}
@@ -391,7 +408,7 @@ export default function TableOrderPage() {
                     <div className="border-t border-gray-200 pt-4">
                       <div className="flex justify-between text-lg font-semibold mb-4">
                         <span>Total:</span>
-                        <span>€{getTotalAmount().toFixed(2)}</span>
+                        <span>{restaurant?.currency || '€'}{getTotalAmount().toFixed(2)}</span>
                       </div>
 
                       {/* Customer Info Form */}
@@ -451,6 +468,26 @@ export default function TableOrderPage() {
           </div>
         </div>
       </div>
+
+      {/* Floating Cart Button for Mobile */}
+      {!showCart && cart.length > 0 && (
+        <div className="lg:hidden fixed bottom-4 right-4 z-30">
+          <button
+            onClick={() => setShowCart(true)}
+            className="bg-primary-600 text-white p-4 rounded-full shadow-lg hover:bg-primary-700 transition-colors"
+          >
+            <div className="flex items-center space-x-2">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
+              </svg>
+              <span className="font-semibold">{cart.reduce((sum, item) => sum + item.quantity, 0)}</span>
+            </div>
+            <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+              {restaurant?.currency || '€'}{getTotalAmount().toFixed(0)}
+            </div>
+          </button>
+        </div>
+      )}
     </div>
   )
 }

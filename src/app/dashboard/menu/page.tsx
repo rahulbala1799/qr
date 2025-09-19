@@ -489,7 +489,7 @@ export default function MenuPage() {
                           {item.description && (
                             <p className="text-sm text-gray-600 mt-1">{item.description}</p>
                           )}
-                          <p className="text-lg font-semibold text-primary-600">${formatPrice(item.price)}</p>
+                          <p className="text-lg font-semibold text-primary-600">€{formatPrice(item.price)}</p>
                         </div>
                       </div>
                       <div className="flex items-center space-x-2">
