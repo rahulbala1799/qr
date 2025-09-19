@@ -32,7 +32,10 @@ export async function GET(
     }
 
     // Create the URL that customers will scan - table-specific
-    const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
+    // Use the request URL to determine the correct base URL
+    const protocol = request.headers.get('x-forwarded-proto') || 'http'
+    const host = request.headers.get('host') || 'localhost:3000'
+    const baseUrl = `${protocol}://${host}`
     const qrUrl = `${baseUrl}/order/${table.restaurantId}/${table.id}`
 
     // Generate QR code as data URL
