@@ -2,8 +2,8 @@ const { PrismaClient } = require('@prisma/client')
 
 const prisma = new PrismaClient()
 
-// Current production URL
-const PRODUCTION_URL = 'https://qr-7dkji49l3-rahulbala1799s-projects.vercel.app'
+// Current production URL - using the working deployment
+const PRODUCTION_URL = 'https://qr-sigma-ten.vercel.app'
 
 async function regenerateQRCodes() {
   try {
