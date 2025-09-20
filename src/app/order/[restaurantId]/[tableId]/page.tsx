@@ -431,8 +431,8 @@ export default function TableOrderPage() {
               ></div>
             )}
             
-            <div className={`bg-white rounded-lg shadow-sm ${showCart ? 'block' : 'hidden lg:block'} ${showCart ? 'fixed inset-4 z-50 lg:relative lg:shadow-sm lg:max-w-none lg:w-auto lg:h-auto' : ''}`}>
-              <div className="p-6">
+            <div className={`bg-white rounded-lg shadow-sm ${showCart ? 'block' : 'hidden lg:block'} ${showCart ? 'fixed inset-0 z-50 flex flex-col lg:relative lg:shadow-sm lg:max-w-none lg:w-auto lg:h-auto' : ''}`}>
+              <div className={`${showCart ? 'flex-1 overflow-y-auto' : ''} p-6`}>
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-lg font-semibold text-gray-900">Your Order</h2>
                   <button
@@ -456,7 +456,7 @@ export default function TableOrderPage() {
                 ) : (
                   <>
                     {/* Cart Items - Simple Scrollable */}
-                    <div className={`space-y-4 mb-6 ${showCart ? 'max-h-60 overflow-y-auto' : ''}`}>
+                    <div className="space-y-4 mb-6">
                       {cart.map((item) => (
                         <div key={item.menuItem.id} className="border-b border-gray-200 pb-4">
                           <div className="flex justify-between items-start">
@@ -496,67 +496,69 @@ export default function TableOrderPage() {
                         </div>
                       ))}
                     </div>
-
-                    {/* Order Form */}
-                    <div className="border-t border-gray-200 pt-4">
-                      <div className="flex justify-between text-lg font-semibold mb-4">
-                        <span>Total:</span>
-                        <span>{restaurant?.currency || '€'}{getTotalAmount().toFixed(2)}</span>
-                      </div>
-
-                      {/* Customer Info Form */}
-                      <div className="space-y-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Your Name (Optional)
-                          </label>
-                          <input
-                            type="text"
-                            value={customerName}
-                            onChange={(e) => setCustomerName(e.target.value)}
-                            className="w-full p-2 border border-gray-300 rounded-md"
-                            placeholder="Enter your name"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Phone Number (Optional)
-                          </label>
-                          <input
-                            type="tel"
-                            value={customerPhone}
-                            onChange={(e) => setCustomerPhone(e.target.value)}
-                            className="w-full p-2 border border-gray-300 rounded-md"
-                            placeholder="Enter your phone number"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Order Notes (Optional)
-                          </label>
-                          <textarea
-                            value={notes}
-                            onChange={(e) => setNotes(e.target.value)}
-                            className="w-full p-2 border border-gray-300 rounded-md"
-                            rows={3}
-                            placeholder="Any special requests or notes for your order..."
-                          />
-                        </div>
-
-                        <button
-                          onClick={placeOrder}
-                          disabled={isOrdering}
-                          className="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                        >
-                          {isOrdering ? 'Placing Order...' : 'Place Order for Table ' + table.tableNumber}
-                        </button>
-                      </div>
-                    </div>
                   </>
                 )}
               </div>
+
+              {/* Fixed Order Form Footer - Only show when cart has items */}
+              {cart.length > 0 && showCart && (
+                <div className="flex-shrink-0 border-t border-gray-200 bg-white p-6">
+                  <div className="flex justify-between text-lg font-semibold mb-4">
+                    <span>Total:</span>
+                    <span>{restaurant?.currency || '€'}{getTotalAmount().toFixed(2)}</span>
+                  </div>
+
+                  {/* Customer Info Form */}
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Your Name (Optional)
+                      </label>
+                      <input
+                        type="text"
+                        value={customerName}
+                        onChange={(e) => setCustomerName(e.target.value)}
+                        className="w-full p-2 border border-gray-300 rounded-md"
+                        placeholder="Enter your name"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Phone Number (Optional)
+                      </label>
+                      <input
+                        type="tel"
+                        value={customerPhone}
+                        onChange={(e) => setCustomerPhone(e.target.value)}
+                        className="w-full p-2 border border-gray-300 rounded-md"
+                        placeholder="Enter your phone number"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Order Notes (Optional)
+                      </label>
+                      <textarea
+                        value={notes}
+                        onChange={(e) => setNotes(e.target.value)}
+                        className="w-full p-2 border border-gray-300 rounded-md"
+                        rows={3}
+                        placeholder="Any special requests or notes for your order..."
+                      />
+                    </div>
+
+                    <button
+                      onClick={placeOrder}
+                      disabled={isOrdering}
+                      className="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      {isOrdering ? 'Placing Order...' : 'Place Order for Table ' + table.tableNumber}
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
