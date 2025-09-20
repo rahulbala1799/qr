@@ -75,6 +75,7 @@ export default function KitchenPage() {
   const [summary, setSummary] = useState<KitchenSummary | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [deviceView, setDeviceView] = useState<'desktop' | 'mobile'>('desktop')
   const [isConnected, setIsConnected] = useState(false)
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date())
 
@@ -110,6 +111,20 @@ export default function KitchenPage() {
       return () => clearInterval(interval)
     }
   }, [session?.user?.id, fetchKitchenOrders])
+
+  // Mobile detection and view mode management
+  useEffect(() => {
+    const checkMobile = () => {
+      const mobile = window.innerWidth < 768
+      if (mobile && deviceView === 'desktop') {
+        setDeviceView('mobile')
+      }
+    }
+
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [deviceView])
 
   const updateItemStatus = useCallback(async (itemId: string, newStatus: 'PREPARING' | 'READY') => {
     try {
@@ -242,7 +257,7 @@ export default function KitchenPage() {
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">
-      <div className="max-w-7xl mx-auto p-6">
+      <div className={`${deviceView === 'mobile' ? 'max-w-sm mx-auto' : 'max-w-7xl mx-auto'} p-6`}>
         {/* Header */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
           <div>
@@ -254,6 +269,36 @@ export default function KitchenPage() {
 
           {/* Connection Status & Summary */}
           <div className="flex flex-col sm:flex-row gap-4 mt-4 lg:mt-0">
+            {/* View Mode Switcher */}
+            <div className="flex items-center bg-slate-800 rounded-lg p-1">
+              <button
+                onClick={() => setDeviceView('desktop')}
+                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center space-x-1 ${
+                  deviceView === 'desktop' 
+                    ? 'bg-slate-700 text-white shadow-sm' 
+                    : 'text-slate-400 hover:text-slate-300'
+                }`}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                <span className="hidden sm:inline">Desktop</span>
+              </button>
+              <button
+                onClick={() => setDeviceView('mobile')}
+                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center space-x-1 ${
+                  deviceView === 'mobile' 
+                    ? 'bg-slate-700 text-white shadow-sm' 
+                    : 'text-slate-400 hover:text-slate-300'
+                }`}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+                <span className="hidden sm:inline">Mobile</span>
+              </button>
+            </div>
+
             <div className={`flex items-center space-x-2 px-3 py-2 rounded-lg ${
               isConnected ? 'bg-green-900/50 text-green-300' : 'bg-red-900/50 text-red-300'
             }`}>
@@ -294,7 +339,7 @@ export default function KitchenPage() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+          <div className={`${deviceView === 'mobile' ? 'space-y-4' : 'grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6'}`}>
             {orders.map((order) => (
               <div
                 key={order.id}

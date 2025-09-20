@@ -49,6 +49,7 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null)
   const [showSettings, setShowSettings] = useState(false)
   const [settingsLoading, setSettingsLoading] = useState(false)
+  const [viewMode, setViewMode] = useState<'desktop' | 'mobile'>('desktop')
 
   const fetchDashboardData = useCallback(async () => {
     try {
@@ -100,6 +101,20 @@ export default function DashboardPage() {
       fetchDashboardData()
     }
   }, [status, router, fetchDashboardData])
+
+  // Mobile detection and view mode management
+  useEffect(() => {
+    const checkMobile = () => {
+      const mobile = window.innerWidth < 768
+      if (mobile && viewMode === 'desktop') {
+        setViewMode('mobile')
+      }
+    }
+
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [viewMode])
 
   // Auto-refresh every 30 seconds
   useEffect(() => {
@@ -202,6 +217,36 @@ export default function DashboardPage() {
               </div>
               
               <div className="flex items-center space-x-3">
+                {/* View Mode Switcher */}
+                <div className="flex items-center bg-gray-100 rounded-lg p-1">
+                  <button
+                    onClick={() => setViewMode('desktop')}
+                    className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center space-x-1 ${
+                      viewMode === 'desktop' 
+                        ? 'bg-white text-gray-900 shadow-sm' 
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    <span className="hidden sm:inline">Desktop</span>
+                  </button>
+                  <button
+                    onClick={() => setViewMode('mobile')}
+                    className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center space-x-1 ${
+                      viewMode === 'mobile' 
+                        ? 'bg-white text-gray-900 shadow-sm' 
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                    <span className="hidden sm:inline">Mobile</span>
+                  </button>
+                </div>
+
                 <button
                   onClick={() => setShowSettings(true)}
                   className="bg-blue-50 hover:bg-blue-100 text-blue-700 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center space-x-2"
@@ -210,15 +255,15 @@ export default function DashboardPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
-                  <span>Settings</span>
+                  <span className="hidden sm:inline">Settings</span>
                 </button>
                 <span className="text-sm text-gray-700">Welcome, {session?.user?.name}</span>
-                <button
-                  onClick={() => signOut()}
+              <button
+                onClick={() => signOut()}
                   className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
-                >
-                  Sign Out
-                </button>
+              >
+                Sign Out
+              </button>
               </div>
             </div>
           </div>
@@ -226,9 +271,78 @@ export default function DashboardPage() {
       </nav>
 
       {/* Main Dashboard Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className={`${viewMode === 'mobile' ? 'max-w-sm mx-auto' : 'max-w-7xl mx-auto'} px-4 sm:px-6 lg:px-8 py-8`}>
         {/* Key Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        {viewMode === 'mobile' ? (
+          <div className="space-y-4 mb-6">
+            {/* Mobile-optimized metrics cards */}
+            <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-4 border border-gray-200/50 shadow-lg">
+              <div className="flex items-center justify-between mb-3">
+                <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+                  <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                  </svg>
+                </div>
+                <span className="text-xs text-gray-500">Today</span>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-gray-900">{formatCurrency(dashboardData?.metrics.today.revenue || 0)}</p>
+                <p className="text-sm text-gray-600">{dashboardData?.metrics.today.orders || 0} orders</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-4 border border-gray-200/50 shadow-lg">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                  </div>
+                  </div>
+                  <div>
+                  <p className="text-lg font-bold text-gray-900">{dashboardData?.metrics.week.orders || 0}</p>
+                  <p className="text-xs text-gray-600">This Week</p>
+                </div>
+              </div>
+
+              <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-4 border border-gray-200/50 shadow-lg">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                    </svg>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-lg font-bold text-gray-900">
+                    {dashboardData?.metrics.month.growth ? 
+                      `${dashboardData.metrics.month.growth > 0 ? '+' : ''}${dashboardData.metrics.month.growth.toFixed(1)}%` 
+                      : '0%'
+                    }
+                  </p>
+                  <p className="text-xs text-gray-600">Growth</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-4 border border-gray-200/50 shadow-lg">
+              <div className="flex items-center justify-between mb-3">
+                <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
+                  <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                  </svg>
+                </div>
+                <span className="text-xs text-gray-500">Average Order</span>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-gray-900">{formatCurrency(dashboardData?.metrics.averageOrderValue || 0)}</p>
+                <p className="text-sm text-gray-600">Per order</p>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Today's Revenue */}
           <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300">
             <div className="flex items-center justify-between">
@@ -307,154 +421,206 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
+        )}
 
-        {/* Charts and Recent Orders */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-          {/* Hourly Orders Chart */}
-          <div className="lg:col-span-2 bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-gray-200/50 shadow-lg">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Today&apos;s Orders by Hour</h3>
-            <div className="h-64 flex items-end justify-between space-x-1">
-              {dashboardData?.charts.hourlyOrders.map((data, index) => (
-                <div key={index} className="flex-1 flex flex-col items-center">
-                  <div 
-                    className="w-full bg-gradient-to-t from-blue-600 to-blue-400 rounded-t-sm min-h-[2px] transition-all duration-300 hover:from-blue-700 hover:to-blue-500"
-                    style={{ height: `${Math.max((data.orders / Math.max(...(dashboardData?.charts.hourlyOrders.map(d => d.orders) || [1]))) * 240, 2)}px` }}
-                    title={`${data.hour}:00 - ${data.orders} orders (${formatCurrency(data.revenue)})`}
-                  ></div>
-                  <span className="text-xs text-gray-500 mt-1">{data.hour}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Order Status Distribution */}
-          <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-gray-200/50 shadow-lg">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Order Status (This Week)</h3>
-            <div className="space-y-3">
-              {dashboardData?.charts.ordersByStatus.map((status) => (
-                <div key={status.status} className="flex items-center justify-between">
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(status.status)}`}>
-                    {status.status}
-                  </span>
-                  <span className="text-sm font-semibold text-gray-900">{status.count}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Quick Actions & Recent Orders */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Quick Actions */}
-          <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-gray-200/50 shadow-lg">
+        {/* Quick Actions */}
+        {viewMode === 'mobile' ? (
+          <div className="mb-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
-            <div className="space-y-3">
+            <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={() => router.push('/dashboard/orders')}
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white p-3 rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 text-sm font-medium flex items-center justify-center space-x-2"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-200 flex flex-col items-center space-y-2"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
-                <span>Manage Orders</span>
+                <span className="text-sm font-medium">Orders</span>
+              </button>
+              
+              <button
+                onClick={() => router.push('/dashboard/kitchen')}
+                className="bg-gradient-to-r from-orange-600 to-red-600 text-white p-4 rounded-xl hover:from-orange-700 hover:to-red-700 transition-all duration-200 flex flex-col items-center space-y-2"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                <span className="text-sm font-medium">Kitchen</span>
               </button>
               
               <button
                 onClick={() => router.push('/dashboard/menu')}
-                className="w-full bg-white border-2 border-gray-200 text-gray-700 p-3 rounded-xl hover:border-gray-300 hover:bg-gray-50 transition-all duration-300 text-sm font-medium flex items-center justify-center space-x-2"
+                className="bg-gradient-to-r from-green-600 to-emerald-600 text-white p-4 rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-200 flex flex-col items-center space-y-2"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-                <span>Update Menu</span>
-              </button>
-              
-              <button
-                onClick={() => router.push('/dashboard/tables')}
-                className="w-full bg-white border-2 border-gray-200 text-gray-700 p-3 rounded-xl hover:border-gray-300 hover:bg-gray-50 transition-all duration-300 text-sm font-medium flex items-center justify-center space-x-2"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
-                <span>Manage Tables</span>
+                <span className="text-sm font-medium">Menu</span>
               </button>
               
               <button
                 onClick={() => router.push('/dashboard/reports')}
-                className="w-full bg-white border-2 border-emerald-200 text-emerald-700 p-3 rounded-xl hover:border-emerald-300 hover:bg-emerald-50 transition-all duration-300 text-sm font-medium flex items-center justify-center space-x-2"
+                className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-4 rounded-xl hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 flex flex-col items-center space-y-2"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 00-2-2z" />
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
-                <span>📊 Reports</span>
+                <span className="text-sm font-medium">Reports</span>
               </button>
-            </div>
-
-            {/* Restaurant Stats */}
-            <div className="mt-6 pt-6 border-t border-gray-200">
-              <h4 className="text-sm font-semibold text-gray-900 mb-3">Restaurant Status</h4>
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Active Tables</span>
-                  <span className="font-medium">{dashboardData?.inventory.activeTables}/{dashboardData?.inventory.totalTables}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Menu Items</span>
-                  <span className="font-medium">{dashboardData?.inventory.activeMenuItems}/{dashboardData?.inventory.totalMenuItems}</span>
-                </div>
-              </div>
             </div>
           </div>
-
-          {/* Recent Orders */}
-          <div className="lg:col-span-2 bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-gray-200/50 shadow-lg">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Recent Orders</h3>
+        ) : (
+          <div className="mb-8">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <button
                 onClick={() => router.push('/dashboard/orders')}
-                className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-200 flex items-center space-x-3 shadow-lg hover:shadow-xl"
               >
-                View All →
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                <span className="font-medium">Order Management</span>
+              </button>
+              
+              <button
+                onClick={() => router.push('/dashboard/kitchen')}
+                className="bg-gradient-to-r from-orange-600 to-red-600 text-white p-6 rounded-xl hover:from-orange-700 hover:to-red-700 transition-all duration-200 flex items-center space-x-3 shadow-lg hover:shadow-xl"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                <span className="font-medium">Kitchen Display</span>
+              </button>
+              
+              <button
+                onClick={() => router.push('/dashboard/menu')}
+                className="bg-gradient-to-r from-green-600 to-emerald-600 text-white p-6 rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-200 flex items-center space-x-3 shadow-lg hover:shadow-xl"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <span className="font-medium">Menu Management</span>
+              </button>
+              
+              <button
+                onClick={() => router.push('/dashboard/reports')}
+                className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-6 rounded-xl hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 flex items-center space-x-3 shadow-lg hover:shadow-xl"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                <span className="font-medium">Reports & Analytics</span>
               </button>
             </div>
-            
-            <div className="space-y-3 max-h-96 overflow-y-auto">
-              {dashboardData?.recentOrders.length === 0 ? (
-                <div className="text-center py-8">
-                  <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                    <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </div>
+        )}
+
+        {/* Charts and Recent Orders */}
+        {viewMode === 'mobile' ? (
+          <div className="space-y-4 mb-6">
+            {/* Mobile Recent Orders */}
+            <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-4 border border-gray-200/50 shadow-lg">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900">Recent Orders</h3>
+                <button
+                  onClick={() => router.push('/dashboard/orders')}
+                  className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                >
+                  View All →
+                </button>
+              </div>
+              
+              <div className="space-y-3 max-h-64 overflow-y-auto">
+                {dashboardData?.recentOrders.length === 0 ? (
+                  <div className="text-center py-6">
+                    <div className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                      <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
+                    </div>
+                    <p className="text-gray-500 text-sm">No orders yet</p>
                   </div>
-                  <p className="text-gray-500 text-sm">No orders yet</p>
-                  <p className="text-gray-400 text-xs">Orders will appear here once customers start placing them</p>
-                </div>
-              ) : (
-                dashboardData?.recentOrders.map((order) => (
-                  <div key={order.id} className="flex items-center justify-between p-3 bg-white/50 rounded-xl border border-gray-100">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2">
+                ) : (
+                  dashboardData?.recentOrders.slice(0, 3).map((order) => (
+                    <div key={order.id} className="p-3 bg-white/50 rounded-xl border border-gray-100">
+                      <div className="flex items-center justify-between mb-2">
                         <span className="font-medium text-gray-900">#{order.orderNumber}</span>
-                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
                           {order.status}
                         </span>
                       </div>
-                      <div className="text-sm text-gray-600">
-                        Table {order.tableNumber} • {order.itemCount} items • {order.customerName || 'Guest'}
+                      <div className="flex items-center justify-between text-sm text-gray-600">
+                        <span>Table {order.tableNumber}</span>
+                        <span className="font-medium">{formatCurrency(order.totalAmount)}</span>
                       </div>
-                      <div className="text-xs text-gray-500">
-                        {new Date(order.createdAt).toLocaleString()}
+                      <div className="text-xs text-gray-500 mt-1">
+                        {new Date(order.createdAt).toLocaleTimeString()}
                       </div>
                     </div>
-                    <div className="text-right">
-                      <div className="font-semibold text-gray-900">{formatCurrency(order.totalAmount)}</div>
+                  ))
+                )}
+              </div>
+            </div>
+
+            {/* Mobile Order Status Summary */}
+            <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-4 border border-gray-200/50 shadow-lg">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Order Status</h3>
+              <div className="grid grid-cols-2 gap-3">
+                {dashboardData?.charts.ordersByStatus.map((status) => (
+                  <div key={status.status} className="flex items-center justify-between p-2 bg-white/50 rounded-lg">
+                    <div className="flex items-center space-x-2">
+                      <div className={`w-2 h-2 rounded-full ${
+                        status.status.toLowerCase() === 'pending' ? 'bg-yellow-400' :
+                        status.status.toLowerCase() === 'confirmed' ? 'bg-blue-400' :
+                        status.status.toLowerCase() === 'preparing' ? 'bg-orange-400' :
+                        status.status.toLowerCase() === 'ready' ? 'bg-green-400' :
+                        'bg-gray-400'
+                      }`}></div>
+                      <span className="text-xs text-gray-700 capitalize">{status.status}</span>
                     </div>
+                    <span className="text-sm font-medium text-gray-900">{status.count}</span>
                   </div>
-                ))
-              )}
+                ))}
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+            {/* Hourly Orders Chart */}
+            <div className="lg:col-span-2 bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-gray-200/50 shadow-lg">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Today&apos;s Orders by Hour</h3>
+              <div className="h-64 flex items-end justify-between space-x-1">
+                {dashboardData?.charts.hourlyOrders.map((data, index) => (
+                  <div key={index} className="flex-1 flex flex-col items-center">
+                    <div 
+                      className="w-full bg-gradient-to-t from-blue-600 to-blue-400 rounded-t-sm min-h-[2px] transition-all duration-300 hover:from-blue-700 hover:to-blue-500"
+                      style={{ height: `${Math.max((data.orders / Math.max(...(dashboardData?.charts.hourlyOrders.map(d => d.orders) || [1]))) * 240, 2)}px` }}
+                      title={`${data.hour}:00 - ${data.orders} orders (${formatCurrency(data.revenue)})`}
+                    ></div>
+                    <span className="text-xs text-gray-500 mt-1">{data.hour}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Order Status Distribution */}
+            <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-gray-200/50 shadow-lg">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Order Status (This Week)</h3>
+              <div className="space-y-3">
+                {dashboardData?.charts.ordersByStatus.map((status) => (
+                  <div key={status.status} className="flex items-center justify-between">
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(status.status)}`}>
+                      {status.status}
+                    </span>
+                    <span className="text-sm font-semibold text-gray-900">{status.count}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
       </main>
 
       {/* Settings Modal */}
