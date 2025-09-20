@@ -51,11 +51,9 @@ export default function TableOrderPage() {
   const [isOrdering, setIsOrdering] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
-  const [showCart, setShowCart] = useState(false)
   const [activeCategory, setActiveCategory] = useState<string>('')
   const [cartAnimation, setCartAnimation] = useState('')
   const [itemAnimations, setItemAnimations] = useState<Record<string, string>>({})
-  const [showOrderForm, setShowOrderForm] = useState(false)
 
   const fetchData = useCallback(async () => {
     try {
@@ -125,30 +123,6 @@ export default function TableOrderPage() {
   }, [categories])
 
   // Prevent body scroll when cart is open on mobile
-  useEffect(() => {
-    if (showCart) {
-      // More comprehensive scroll prevention
-      document.body.style.overflow = 'hidden'
-      document.body.style.position = 'fixed'
-      document.body.style.width = '100%'
-      document.body.style.height = '100%'
-      document.documentElement.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = ''
-      document.body.style.position = ''
-      document.body.style.width = ''
-      document.body.style.height = ''
-      document.documentElement.style.overflow = ''
-    }
-
-    return () => {
-      document.body.style.overflow = ''
-      document.body.style.position = ''
-      document.body.style.width = ''
-      document.body.style.height = ''
-      document.documentElement.style.overflow = ''
-    }
-  }, [showCart])
 
   const addToCart = (menuItem: MenuItem) => {
     // Add item animation
@@ -339,7 +313,7 @@ export default function TableOrderPage() {
               </div>
             </div>
             <button
-              onClick={() => setShowCart(!showCart)}
+              onClick={() => router.push(`/cart/${restaurantId}/${tableId}`)}
               className={`relative bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-all duration-300 hover:scale-105 ${cartAnimation}`}
             >
               <span className="hidden sm:inline">Cart ({cart.length})</span>
@@ -463,170 +437,59 @@ export default function TableOrderPage() {
             )}
           </div>
 
-          {/* Cart Sidebar */}
-          <div className="lg:col-span-1">
-            {/* Mobile Cart Overlay */}
-            {showCart && (
-              <div 
-                className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40" 
-                onClick={() => setShowCart(false)}
-                style={{ touchAction: 'none' }}
-              ></div>
-            )}
-            
-            {/* CLEAN SIMPLE CART - NO MORE BULLSHIT */}
-            <div className={`bg-white rounded-lg shadow-sm ${showCart ? 'block' : 'hidden lg:block'} ${showCart ? 'fixed inset-4 z-50 animate-slide-in-right' : ''}`}>
+          {/* Cart Summary - Desktop Only */}
+          <div className="hidden lg:block lg:col-span-1">
+            <div className="sticky top-4 bg-white rounded-lg shadow-sm p-6">
+              <h2 className="text-xl font-bold text-gray-900 mb-4">Your Order</h2>
               
-              {/* Cart Header */}
-              <div className="p-6 border-b border-gray-200">
-                <div className="flex justify-between items-center">
-                  <h2 className="text-xl font-bold text-gray-900">Your Order</h2>
-                  {showCart && (
-                    <button
-                      onClick={() => setShowCart(false)}
-                      className="lg:hidden p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
-                    >
-                      <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
-                  )}
-                </div>
-                
-                {/* Table Info */}
-                <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                  <div className="flex items-center space-x-2">
-                    <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                    </svg>
-                    <span className="font-medium text-blue-900">Table {table.tableNumber}</span>
-                  </div>
+              {/* Table Info */}
+              <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="flex items-center space-x-2">
+                  <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                  <span className="font-medium text-blue-900">Table {table.tableNumber}</span>
                 </div>
               </div>
 
-              {/* Cart Items - PROPER SPACE */}
-              <div className={`${showCart ? 'max-h-96' : 'max-h-80'} overflow-y-auto p-6`}>
-                {cart.length === 0 ? (
-                  <div className="text-center py-8">
-                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
-                      </svg>
-                    </div>
-                    <h3 className="font-medium text-gray-900 mb-1">Your cart is empty</h3>
-                    <p className="text-gray-500 text-sm">Add items from the menu</p>
+              {cart.length === 0 ? (
+                <div className="text-center py-8">
+                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
+                    </svg>
                   </div>
-                ) : (
-                  <div className="space-y-4">
+                  <h3 className="font-medium text-gray-900 mb-1">Your cart is empty</h3>
+                  <p className="text-gray-500 text-sm">Add items from the menu</p>
+                </div>
+              ) : (
+                <>
+                  <div className="space-y-3 mb-4 max-h-60 overflow-y-auto">
                     {cart.map((item) => (
-                      <div key={item.menuItem.id} className="bg-gray-50 p-4 rounded-lg">
-                        <div className="flex justify-between items-start mb-3">
-                          <div className="flex-1">
-                            <h3 className="font-medium text-gray-900">{item.menuItem.name}</h3>
-                            <p className="text-primary-600 font-medium text-sm">{restaurant?.currency || '€'}{item.menuItem.price.toFixed(2)} each</p>
-                          </div>
-                          <button
-                            onClick={() => removeFromCart(item.menuItem.id)}
-                            className="text-red-500 hover:text-red-700 p-1"
-                          >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                          </button>
+                      <div key={item.menuItem.id} className="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
+                        <div className="flex-1">
+                          <h3 className="font-medium text-gray-900 text-sm">{item.menuItem.name}</h3>
+                          <p className="text-xs text-gray-600">{item.quantity}x {restaurant?.currency || '€'}{item.menuItem.price.toFixed(2)}</p>
                         </div>
-                        
-                        <div className="flex items-center justify-between mb-3">
-                          <div className="flex items-center space-x-2">
-                            <button
-                              onClick={() => updateQuantity(item.menuItem.id, item.quantity - 1)}
-                              className="w-7 h-7 rounded bg-primary-100 text-primary-600 flex items-center justify-center hover:bg-primary-200"
-                            >
-                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-                              </svg>
-                            </button>
-                            <span className="w-8 text-center font-medium">{item.quantity}</span>
-                            <button
-                              onClick={() => updateQuantity(item.menuItem.id, item.quantity + 1)}
-                              className="w-7 h-7 rounded bg-primary-100 text-primary-600 flex items-center justify-center hover:bg-primary-200"
-                            >
-                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                              </svg>
-                            </button>
-                          </div>
-                          <div className="text-right">
-                            <p className="font-bold text-gray-900">{restaurant?.currency || '€'}{(item.menuItem.price * item.quantity).toFixed(2)}</p>
-                          </div>
-                        </div>
-                        
-                        <textarea
-                          value={item.notes}
-                          onChange={(e) => updateNotes(item.menuItem.id, e.target.value)}
-                          placeholder="Special instructions..."
-                          className="w-full p-2 border border-gray-200 rounded text-sm"
-                          rows={2}
-                        />
+                        <p className="font-medium text-primary-600">{restaurant?.currency || '€'}{(item.menuItem.price * item.quantity).toFixed(2)}</p>
                       </div>
                     ))}
                   </div>
-                )}
-              </div>
-
-              {/* Order Footer */}
-              {cart.length > 0 && (
-                <div className="flex-shrink-0 border-t border-gray-200 bg-white p-6">
-                  <div className="flex justify-between text-lg font-semibold mb-4">
-                    <span>Total:</span>
-                    <span>{restaurant?.currency || '€'}{getTotalAmount().toFixed(2)}</span>
+                  
+                  <div className="border-t pt-4 mb-4">
+                    <div className="flex justify-between text-lg font-bold">
+                      <span>Total:</span>
+                      <span>{restaurant?.currency || '€'}{getTotalAmount().toFixed(2)}</span>
+                    </div>
                   </div>
 
-                  <div className="space-y-3">
-                    <input
-                      type="text"
-                      value={customerName}
-                      onChange={(e) => setCustomerName(e.target.value)}
-                      className="w-full p-3 border border-gray-300 rounded-lg"
-                      placeholder="Your name (optional)"
-                    />
-
-                    <input
-                      type="tel"
-                      value={customerPhone}
-                      onChange={(e) => setCustomerPhone(e.target.value)}
-                      className="w-full p-3 border border-gray-300 rounded-lg"
-                      placeholder="Phone number (optional)"
-                    />
-
-                    <textarea
-                      value={notes}
-                      onChange={(e) => setNotes(e.target.value)}
-                      className="w-full p-3 border border-gray-300 rounded-lg"
-                      rows={2}
-                      placeholder="Special instructions (optional)"
-                    />
-
-                    <button
-                      onClick={placeOrder}
-                      disabled={isOrdering}
-                      className="w-full bg-primary-600 text-white py-3 rounded-lg hover:bg-primary-700 disabled:opacity-50 font-medium"
-                    >
-                      {isOrdering ? 'Placing Order...' : `Place Order - ${restaurant?.currency || '€'}${getTotalAmount().toFixed(2)}`}
-                    </button>
-
-                    {error && (
-                      <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-                        <p className="text-red-600 text-sm">{error}</p>
-                      </div>
-                    )}
-
-                    {success && (
-                      <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-                        <p className="text-green-600 text-sm">{success}</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
+                  <button
+                    onClick={() => router.push(`/cart/${restaurantId}/${tableId}`)}
+                    className="w-full bg-primary-600 text-white py-3 rounded-lg hover:bg-primary-700 font-medium"
+                  >
+                    View Cart & Checkout
+                  </button>
+                </>
               )}
             </div>
           </div>
@@ -649,9 +512,9 @@ export default function TableOrderPage() {
         )}
         
         {/* Cart Button for Mobile */}
-        {!showCart && cart.length > 0 && (
+        {cart.length > 0 && (
           <button
-            onClick={() => setShowCart(true)}
+            onClick={() => router.push(`/cart/${restaurantId}/${tableId}`)}
             className="bg-primary-600 text-white p-4 rounded-full shadow-lg hover:bg-primary-700 transition-colors"
           >
             <div className="flex items-center space-x-2">
