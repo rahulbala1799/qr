@@ -275,73 +275,77 @@ export default function DashboardPage() {
       </nav>
 
       {/* Main Dashboard Content */}
-      <main className={`${viewMode === 'mobile' ? 'max-w-sm mx-auto' : 'max-w-7xl mx-auto'} px-4 sm:px-6 lg:px-8 py-8`}>
+      <main className={`${viewMode === 'mobile' ? 'max-w-full mx-auto px-3 py-4' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'}`}>
         {/* Key Metrics */}
         {viewMode === 'mobile' ? (
-          <div className="space-y-4 mb-6">
+          <div className="space-y-3 mb-6">
             {/* Mobile-optimized metrics cards */}
-            <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-4 border border-gray-200/50 shadow-lg">
+            <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
               <div className="flex items-center justify-between mb-3">
-                <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
-                  <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                  </svg>
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                    <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-lg font-bold text-gray-900">{formatCurrency(dashboardData?.metrics.today.revenue || 0)}</p>
+                    <p className="text-xs text-gray-500">Today&apos;s Revenue</p>
+                  </div>
                 </div>
-                <span className="text-xs text-gray-500">Today</span>
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-gray-900">{formatCurrency(dashboardData?.metrics.today.revenue || 0)}</p>
-                <p className="text-sm text-gray-600">{dashboardData?.metrics.today.orders || 0} orders</p>
+                <span className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-full">{dashboardData?.metrics.today.orders || 0} orders</span>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-4 border border-gray-200/50 shadow-lg">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-white rounded-xl p-3 shadow-sm border border-gray-100">
+                <div className="flex items-center space-x-2 mb-2">
+                  <div className="w-6 h-6 bg-blue-100 rounded-md flex items-center justify-center">
+                    <svg className="w-3 h-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                     </svg>
                   </div>
-                </div>
-                <div>
-                  <p className="text-lg font-bold text-gray-900">{dashboardData?.metrics.week.orders || 0}</p>
-                  <p className="text-xs text-gray-600">This Week</p>
+                  <div>
+                    <p className="text-sm font-bold text-gray-900">{dashboardData?.metrics.week.orders || 0}</p>
+                    <p className="text-xs text-gray-500">This Week</p>
+                  </div>
                 </div>
               </div>
 
-              <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-4 border border-gray-200/50 shadow-lg">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                    <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="bg-white rounded-xl p-3 shadow-sm border border-gray-100">
+                <div className="flex items-center space-x-2 mb-2">
+                  <div className="w-6 h-6 bg-purple-100 rounded-md flex items-center justify-center">
+                    <svg className="w-3 h-3 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                     </svg>
                   </div>
-                </div>
-                <div>
-                  <p className="text-lg font-bold text-gray-900">
-                    {dashboardData?.metrics.month.growth ? 
-                      `${dashboardData.metrics.month.growth > 0 ? '+' : ''}${dashboardData.metrics.month.growth.toFixed(1)}%` 
-                      : '0%'
-                    }
-                  </p>
-                  <p className="text-xs text-gray-600">Growth</p>
+                  <div>
+                    <p className="text-sm font-bold text-gray-900">
+                      {dashboardData?.metrics.month.growth ? 
+                        `${dashboardData.metrics.month.growth > 0 ? '+' : ''}${dashboardData.metrics.month.growth.toFixed(1)}%` 
+                        : '0%'
+                      }
+                    </p>
+                    <p className="text-xs text-gray-500">Growth</p>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-4 border border-gray-200/50 shadow-lg">
+            <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
               <div className="flex items-center justify-between mb-3">
-                <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
-                  <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                  </svg>
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                    <svg className="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-lg font-bold text-gray-900">{formatCurrency(dashboardData?.metrics.averageOrderValue || 0)}</p>
+                    <p className="text-xs text-gray-500">Average Order Value</p>
+                  </div>
                 </div>
-                <span className="text-xs text-gray-500">Average Order</span>
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-gray-900">{formatCurrency(dashboardData?.metrics.averageOrderValue || 0)}</p>
-                <p className="text-sm text-gray-600">Per order</p>
+                <span className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-full">Per order</span>
               </div>
             </div>
           </div>

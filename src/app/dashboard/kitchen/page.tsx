@@ -261,7 +261,7 @@ export default function KitchenPage() {
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">
-      <div className={`${deviceView === 'mobile' ? 'max-w-sm mx-auto' : 'max-w-7xl mx-auto'} p-6`}>
+      <div className={`${deviceView === 'mobile' ? 'max-w-full mx-auto px-3 py-4' : 'max-w-7xl mx-auto p-6'}`}>
         {/* Header */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
           <div>

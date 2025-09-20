@@ -635,7 +635,7 @@ export default function OrdersPage() {
       </nav>
 
       {/* Main Content */}
-      <main className={`${deviceView === 'mobile' ? 'max-w-sm mx-auto' : 'max-w-7xl mx-auto'} px-4 sm:px-6 lg:px-8 py-8`}>
+      <main className={`${deviceView === 'mobile' ? 'max-w-full mx-auto px-3 py-4' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'}`}>
           {/* Error Message */}
           {error && (
           <div className="mb-6 bg-red-50 border-l-4 border-red-400 p-4 rounded-lg">
@@ -830,6 +830,16 @@ export default function OrdersPage() {
                           </button>
                         )}
                       </div>
+        ) : deviceView === 'mobile' ? (
+          /* Mobile View - Single Column */
+          <div className="space-y-4">
+            {filteredAndSortedOrders.map((order) => {
+              const isNewOrder = orders.indexOf(order) < newOrdersCount && order.status === 'PENDING'
+              return (
+                <OrderCard key={order.id} order={order} isNew={isNewOrder} />
+              )
+            })}
+          </div>
         ) : viewMode === 'kanban' ? (
           /* Kanban View */
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
