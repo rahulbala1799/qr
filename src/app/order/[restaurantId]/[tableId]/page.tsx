@@ -52,12 +52,38 @@ export default function TableOrderPage() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [showCart, setShowCart] = useState(false)
+  const [activeCategory, setActiveCategory] = useState<string>('')
 
   useEffect(() => {
     if (restaurantId && tableId) {
       fetchData()
     }
   }, [restaurantId, tableId])
+
+  // Scroll detection for category navigation
+  useEffect(() => {
+    const handleScroll = () => {
+      const categoryElements = categories.map(cat => ({
+        id: cat,
+        element: document.getElementById(`category-${cat}`)
+      })).filter(cat => cat.element)
+
+      if (categoryElements.length === 0) return
+
+      const scrollPosition = window.scrollY + 200 // Offset for sticky header
+
+      for (let i = categoryElements.length - 1; i >= 0; i--) {
+        const category = categoryElements[i]
+        if (category.element && category.element.offsetTop <= scrollPosition) {
+          setActiveCategory(category.id)
+          break
+        }
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [categories])
 
   const fetchData = useCallback(async () => {
     try {
@@ -78,6 +104,10 @@ export default function TableOrderPage() {
           setTable(foundTable)
           setMenu(menuData.menu)
           setCategories(menuData.categories)
+          // Set first category as active
+          if (menuData.categories.length > 0) {
+            setActiveCategory(menuData.categories[0])
+          }
         } else {
           throw new Error('Table not found')
         }
@@ -136,6 +166,14 @@ export default function TableOrderPage() {
 
   const getTotalAmount = () => {
     return cart.reduce((total, item) => total + (item.menuItem.price * item.quantity), 0)
+  }
+
+  const scrollToCategory = (category: string) => {
+    setActiveCategory(category)
+    const element = document.getElementById(`category-${category}`)
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
   }
 
   const placeOrder = async () => {
@@ -258,6 +296,29 @@ export default function TableOrderPage() {
         </div>
       </div>
 
+      {/* Category Navigation */}
+      {categories.length > 1 && (
+        <div className="bg-white border-b border-gray-200 sticky top-16 z-10">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex space-x-1 overflow-x-auto py-2">
+              {categories.map((category) => (
+                <button
+                  key={category}
+                  onClick={() => scrollToCategory(category)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+                    activeCategory === category
+                      ? 'bg-primary-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Success/Error Messages */}
       {success && (
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -286,7 +347,7 @@ export default function TableOrderPage() {
             ) : (
               <div className="space-y-8">
                 {categories.map((category) => (
-                  <div key={category} className="bg-white rounded-lg shadow-sm overflow-hidden">
+                  <div key={category} id={`category-${category}`} className="bg-white rounded-lg shadow-sm overflow-hidden">
                     <div className="bg-primary-600 px-6 py-4">
                       <h2 className="text-xl font-semibold text-white">{category}</h2>
                     </div>
@@ -469,9 +530,23 @@ export default function TableOrderPage() {
         </div>
       </div>
 
-      {/* Floating Cart Button for Mobile */}
-      {!showCart && cart.length > 0 && (
-        <div className="lg:hidden fixed bottom-4 right-4 z-30">
+      {/* Floating Buttons */}
+      <div className="fixed bottom-4 right-4 z-30 flex flex-col space-y-2">
+        {/* Back to Top Button */}
+        {categories.length > 1 && (
+          <button
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="bg-gray-600 text-white p-3 rounded-full shadow-lg hover:bg-gray-700 transition-colors"
+            title="Back to top"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+            </svg>
+          </button>
+        )}
+        
+        {/* Cart Button for Mobile */}
+        {!showCart && cart.length > 0 && (
           <button
             onClick={() => setShowCart(true)}
             className="bg-primary-600 text-white p-4 rounded-full shadow-lg hover:bg-primary-700 transition-colors"
@@ -486,8 +561,8 @@ export default function TableOrderPage() {
               {restaurant?.currency || '€'}{getTotalAmount().toFixed(0)}
             </div>
           </button>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   )
 }
