@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
 
@@ -434,18 +434,39 @@ export default function TableOrderPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-600"></div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="relative mb-8">
+            <div className="w-20 h-20 border-4 border-slate-200 rounded-full animate-spin"></div>
+            <div className="absolute top-0 left-0 w-20 h-20 border-4 border-transparent border-t-indigo-600 rounded-full animate-spin"></div>
+          </div>
+          <div className="space-y-3">
+            <div className="h-2 bg-slate-200 rounded-full w-32 mx-auto animate-pulse"></div>
+            <div className="h-2 bg-slate-200 rounded-full w-24 mx-auto animate-pulse"></div>
+          </div>
+          <p className="mt-6 text-slate-600 font-medium">Loading your menu...</p>
+        </div>
       </div>
     )
   }
 
   if (error && !restaurant) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
+      <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50 flex items-center justify-center p-4">
+        <div className="text-center max-w-md">
+          <div className="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Restaurant Not Found</h1>
-          <p className="text-gray-600">{error}</p>
+          <p className="text-gray-600 mb-6">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="bg-indigo-600 text-white px-6 py-3 rounded-xl hover:bg-indigo-700 transition-colors font-medium"
+          >
+            Try Again
+          </button>
         </div>
       </div>
     )
@@ -453,59 +474,76 @@ export default function TableOrderPage() {
 
   if (!table) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Table Not Found</h1>
-          <p className="text-gray-600">This table is not available for ordering.</p>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center p-4">
+        <div className="text-center max-w-md">
+          <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <svg className="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Table Not Available</h1>
+          <p className="text-gray-600">This table is not available for ordering at the moment.</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50">
+      {/* Modern Header */}
+      <div className="bg-white/80 backdrop-blur-xl border-b border-white/20 sticky top-0 z-50 shadow-sm">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               {restaurant?.logo && (
-                <div className="w-12 h-12 relative">
+                <div className="w-14 h-14 relative rounded-2xl overflow-hidden shadow-lg">
                   <Image
                     src={restaurant.logo}
                     alt={restaurant.name}
                     fill
-                    className="object-cover rounded-lg"
+                    className="object-cover"
                   />
                 </div>
               )}
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">{restaurant?.name}</h1>
-                <p className="text-sm text-gray-600">
-                  Table {table.tableNumber} • Order Online
-                </p>
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
+                  {restaurant?.name}
+                </h1>
+                <div className="flex items-center space-x-2 text-sm text-slate-600">
+                  <div className="flex items-center space-x-1">
+                    <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                    <span>Table {table.tableNumber}</span>
+                  </div>
+                  <span>•</span>
+                  <span>Order Online</span>
+                </div>
               </div>
             </div>
+            
             {!isTrackingOrder && (
               <button
                 onClick={() => router.push(`/cart/${restaurantId}/${tableId}`)}
-                className={`relative bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-all duration-300 hover:scale-105 ${cartAnimation}`}
+                className={`group relative bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-2xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl ${cartAnimation}`}
               >
-                <span className="hidden sm:inline">Cart ({cart.length})</span>
-                <span className="sm:hidden">Cart</span>
+                <div className="flex items-center space-x-2">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m0 0L17 18m0 0l2.5-5M17 18l2.5-5" />
+                  </svg>
+                  <span className="font-semibold">Cart ({cart.length})</span>
+                </div>
                 {cart.length > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-bounce">
+                  <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center animate-bounce shadow-lg">
                     {cart.reduce((sum, item) => sum + item.quantity, 0)}
-                  </span>
+                  </div>
                 )}
               </button>
             )}
             
             {isTrackingOrder && (
               <div className="flex items-center space-x-3">
-                <div className="flex items-center space-x-2 bg-green-100 px-3 py-2 rounded-lg">
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-sm font-medium text-green-700">TRACKING ORDER</span>
+                <div className="flex items-center space-x-2 bg-gradient-to-r from-emerald-50 to-green-50 px-4 py-2 rounded-2xl border border-emerald-200">
+                  <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                  <span className="text-sm font-semibold text-emerald-700">TRACKING ORDER</span>
                 </div>
                 <button
                   onClick={() => {
@@ -520,7 +558,7 @@ export default function TableOrderPage() {
                       }))
                     }
                   }}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                  className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-2.5 rounded-2xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 text-sm font-semibold shadow-lg hover:shadow-xl"
                 >
                   Add More Items
                 </button>
@@ -530,22 +568,25 @@ export default function TableOrderPage() {
         </div>
       </div>
 
-      {/* Category Navigation */}
+      {/* Modern Category Navigation */}
       {categories.length > 1 && (
-        <div className="bg-white border-b border-gray-200 sticky top-16 z-10">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex space-x-1 overflow-x-auto py-2">
+        <div className="bg-white/80 backdrop-blur-xl border-b border-white/20 sticky top-[88px] z-40">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex space-x-2 overflow-x-auto py-4 scrollbar-hide">
               {categories.map((category) => (
                 <button
                   key={category}
                   onClick={() => scrollToCategory(category)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+                  className={`group relative px-6 py-3 rounded-2xl text-sm font-semibold whitespace-nowrap transition-all duration-300 ${
                     activeCategory === category
-                      ? 'bg-primary-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg scale-105'
+                      : 'bg-white/60 text-slate-700 hover:bg-white/80 hover:scale-105 shadow-sm hover:shadow-md border border-white/40'
                   }`}
                 >
-                  {category}
+                  <span className="relative z-10">{category}</span>
+                  {activeCategory === category && (
+                    <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl opacity-20 animate-pulse"></div>
+                  )}
                 </button>
               ))}
             </div>
@@ -553,11 +594,18 @@ export default function TableOrderPage() {
         </div>
       )}
 
-      {/* Success/Error Messages */}
+      {/* Modern Success Messages */}
       {success && (
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded-md">
-            {success}
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200 text-emerald-700 px-6 py-4 rounded-2xl shadow-lg backdrop-blur-sm">
+            <div className="flex items-center space-x-3">
+              <div className="w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center">
+                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <span className="font-semibold">{success}</span>
+            </div>
           </div>
         </div>
       )}
