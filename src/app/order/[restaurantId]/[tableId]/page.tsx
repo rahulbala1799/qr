@@ -211,8 +211,37 @@ export default function TableOrderPage() {
   useEffect(() => {
     if (restaurantId && tableId) {
       fetchData()
+      
+      // Check if we should start tracking an order
+      const urlParams = new URLSearchParams(window.location.search)
+      const shouldTrack = urlParams.get('tracking') === 'true'
+      
+      if (shouldTrack) {
+        // Load order data from localStorage
+        const storedOrderData = localStorage.getItem(`placed_order_${restaurantId}_${tableId}`)
+        if (storedOrderData) {
+          try {
+            const { order } = JSON.parse(storedOrderData)
+            setPlacedOrder(order)
+            setOrderStatus(order.status)
+            setIsTrackingOrder(true)
+            setSuccess(`Order placed successfully! Order #${order.orderNumber}`)
+            
+            // Play success sound
+            playCustomerNotification()
+            
+            // Clean up localStorage
+            localStorage.removeItem(`placed_order_${restaurantId}_${tableId}`)
+            
+            // Clean up URL
+            window.history.replaceState({}, '', `/order/${restaurantId}/${tableId}`)
+          } catch (error) {
+            console.error('Error loading order data:', error)
+          }
+        }
+      }
     }
-  }, [restaurantId, tableId, fetchData])
+  }, [restaurantId, tableId, fetchData, playCustomerNotification])
 
   // Scroll detection for category navigation
   useEffect(() => {

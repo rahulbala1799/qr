@@ -201,16 +201,22 @@ export default function CartPage() {
 
       if (response.ok) {
         const result = await response.json()
-        setSuccess('Order placed successfully! Your order number is #' + result.order.id.slice(-6).toUpperCase())
+        setSuccess('Order placed successfully! Your order number is #' + result.order.orderNumber)
         
         // Clear cart
         setCart([])
         localStorage.removeItem(`cart_${restaurantId}_${tableId}`)
         
-        // Redirect to confirmation page after 3 seconds
+        // Store order data for tracking
+        localStorage.setItem(`placed_order_${restaurantId}_${tableId}`, JSON.stringify({
+          order: result.order,
+          timestamp: Date.now()
+        }))
+        
+        // Redirect back to order page with tracking after 2 seconds
         setTimeout(() => {
-          router.push(`/order-confirmation/${result.order.id}`)
-        }, 3000)
+          router.push(`/order/${restaurantId}/${tableId}?tracking=true`)
+        }, 2000)
       } else {
         const errorData = await response.json()
         setError(errorData.error || 'Failed to place order')
