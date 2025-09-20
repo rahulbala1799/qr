@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
 
 interface MenuItem {
@@ -36,6 +36,7 @@ interface Restaurant {
 
 export default function TableOrderPage() {
   const params = useParams()
+  const router = useRouter()
   const restaurantId = params.restaurantId as string
   const tableId = params.tableId as string
   
