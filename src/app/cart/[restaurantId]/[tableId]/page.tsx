@@ -60,22 +60,6 @@ export default function CartPage() {
   const [promoCode, setPromoCode] = useState('')
   const [discount, setDiscount] = useState(0)
 
-  // Load cart from localStorage and fetch data
-  useEffect(() => {
-    const savedCart = localStorage.getItem(`cart_${restaurantId}_${tableId}`)
-    if (savedCart) {
-      setCart(JSON.parse(savedCart))
-    }
-    fetchData()
-  }, [restaurantId, tableId, fetchData])
-
-  // Calculate estimated preparation time
-  useEffect(() => {
-    const baseTime = 15 // Base 15 minutes
-    const itemTime = cart.reduce((total, item) => total + (item.quantity * 2), 0) // 2 min per item
-    setEstimatedTime(baseTime + itemTime)
-  }, [cart])
-
   const fetchData = useCallback(async () => {
     try {
       setIsLoading(true)
@@ -104,6 +88,22 @@ export default function CartPage() {
       setIsLoading(false)
     }
   }, [restaurantId, tableId])
+
+  // Load cart from localStorage and fetch data
+  useEffect(() => {
+    const savedCart = localStorage.getItem(`cart_${restaurantId}_${tableId}`)
+    if (savedCart) {
+      setCart(JSON.parse(savedCart))
+    }
+    fetchData()
+  }, [restaurantId, tableId, fetchData])
+
+  // Calculate estimated preparation time
+  useEffect(() => {
+    const baseTime = 15 // Base 15 minutes
+    const itemTime = cart.reduce((total, item) => total + (item.quantity * 2), 0) // 2 min per item
+    setEstimatedTime(baseTime + itemTime)
+  }, [cart])
 
   // Save cart to localStorage whenever it changes
   useEffect(() => {
