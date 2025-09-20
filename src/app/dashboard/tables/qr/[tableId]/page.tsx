@@ -28,14 +28,6 @@ export default function QRCodePage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
 
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/auth/signin')
-    } else if (status === 'authenticated') {
-      fetchQRData()
-    }
-  }, [status, router, tableId, fetchQRData])
-
   const fetchQRData = useCallback(async () => {
     try {
       const [qrResponse, restaurantResponse] = await Promise.all([
@@ -58,6 +50,14 @@ export default function QRCodePage() {
       setIsLoading(false)
     }
   }, [tableId])
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/auth/signin')
+    } else if (status === 'authenticated') {
+      fetchQRData()
+    }
+  }, [status, router, tableId, fetchQRData])
 
   const handlePrint = () => {
     window.print()
