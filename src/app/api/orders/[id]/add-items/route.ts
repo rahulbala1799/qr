@@ -99,7 +99,7 @@ export async function POST(
             menuItem: true
           },
           orderBy: {
-            createdAt: 'asc'
+            id: 'asc'
           }
         },
         table: true,
