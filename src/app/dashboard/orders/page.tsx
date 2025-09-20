@@ -248,7 +248,7 @@ export default function OrdersPage() {
                                 <p className="text-sm text-gray-600 italic">Note: {item.notes}</p>
                               )}
                             </div>
-                            <p className="text-gray-900">€{(item.price * item.quantity).toFixed(2)}</p>
+                            <p className="text-gray-900">€{(Number(item.price || 0) * item.quantity).toFixed(2)}</p>
                           </div>
                         ))}
                       </div>
@@ -265,7 +265,7 @@ export default function OrdersPage() {
                     {/* Total */}
                     <div className="flex justify-between items-center pt-4 border-t border-gray-200">
                       <span className="text-lg font-semibold text-gray-900">Total Amount</span>
-                      <span className="text-lg font-bold text-primary-600">€{order.totalAmount.toFixed(2)}</span>
+                      <span className="text-lg font-bold text-primary-600">€{Number(order.totalAmount || 0).toFixed(2)}</span>
                     </div>
                   </div>
                 </div>
