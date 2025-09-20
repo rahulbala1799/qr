@@ -8,7 +8,11 @@ export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
     
+    console.log('🔍 REPORTS API DEBUG:')
+    console.log('Session:', session?.user?.id ? `User ID: ${session.user.id}` : 'No session')
+    
     if (!session?.user?.id) {
+      console.log('❌ No session - returning 401')
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -28,6 +32,14 @@ export async function GET(request: NextRequest) {
       gte: startDate ? new Date(startDate) : defaultStartDate,
       lte: endDate ? new Date(endDate) : defaultEndDate
     }
+
+    console.log('📅 Date filter:', {
+      startDate: startDate || 'default',
+      endDate: endDate || 'default',
+      actualStart: dateFilter.gte.toISOString(),
+      actualEnd: dateFilter.lte.toISOString()
+    })
+    console.log('🏪 Restaurant ID:', restaurantId)
 
     // Get restaurant info
     const restaurant = await prisma.restaurant.findUnique({
@@ -64,10 +76,18 @@ export async function GET(request: NextRequest) {
       orderBy: { createdAt: 'desc' }
     })
 
+    console.log('📦 Orders found:', ordersInRange.length)
+    
     // Calculate comprehensive metrics
     const totalOrders = ordersInRange.length
     const totalRevenue = ordersInRange.reduce((sum, order) => sum + Number(order.totalAmount), 0)
     const averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0
+
+    console.log('📊 Calculated metrics:', {
+      totalOrders,
+      totalRevenue,
+      averageOrderValue
+    })
 
     // Order status breakdown
     const ordersByStatus = ordersInRange.reduce((acc, order) => {
