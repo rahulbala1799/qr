@@ -106,8 +106,12 @@ export default function DashboardPage() {
   useEffect(() => {
     const checkMobile = () => {
       const mobile = window.innerWidth < 768
-      if (mobile && viewMode === 'desktop') {
+      // Always set to mobile if screen is small, regardless of current view mode
+      if (mobile) {
         setViewMode('mobile')
+      } else if (window.innerWidth >= 768 && viewMode === 'mobile') {
+        // Only switch to desktop if screen is large enough and currently on mobile
+        setViewMode('desktop')
       }
     }
 
@@ -217,33 +221,33 @@ export default function DashboardPage() {
               </div>
               
               <div className="flex items-center space-x-3">
-                {/* View Mode Switcher */}
+                {/* View Mode Switcher - Always visible */}
                 <div className="flex items-center bg-gray-100 rounded-lg p-1">
                   <button
                     onClick={() => setViewMode('desktop')}
-                    className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center space-x-1 ${
+                    className={`px-2 py-1.5 rounded-md text-xs font-medium transition-colors flex items-center space-x-1 ${
                       viewMode === 'desktop' 
                         ? 'bg-white text-gray-900 shadow-sm' 
                         : 'text-gray-600 hover:text-gray-900'
                     }`}
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
-                    <span className="hidden sm:inline">Desktop</span>
+                    <span className="text-xs">Desktop</span>
                   </button>
                   <button
                     onClick={() => setViewMode('mobile')}
-                    className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center space-x-1 ${
+                    className={`px-2 py-1.5 rounded-md text-xs font-medium transition-colors flex items-center space-x-1 ${
                       viewMode === 'mobile' 
                         ? 'bg-white text-gray-900 shadow-sm' 
                         : 'text-gray-600 hover:text-gray-900'
                     }`}
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
                     </svg>
-                    <span className="hidden sm:inline">Mobile</span>
+                    <span className="text-xs">Mobile</span>
                   </button>
                 </div>
 
@@ -299,8 +303,8 @@ export default function DashboardPage() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                     </svg>
                   </div>
-                  </div>
-                  <div>
+                </div>
+                <div>
                   <p className="text-lg font-bold text-gray-900">{dashboardData?.metrics.week.orders || 0}</p>
                   <p className="text-xs text-gray-600">This Week</p>
                 </div>

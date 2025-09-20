@@ -195,8 +195,12 @@ export default function OrdersPage() {
     const checkMobile = () => {
       const mobile = window.innerWidth < 768
       setIsMobile(mobile)
-      if (mobile && deviceView === 'desktop') {
+      // Always set to mobile if screen is small, regardless of current view mode
+      if (mobile) {
         setDeviceView('mobile')
+      } else if (window.innerWidth >= 768 && deviceView === 'mobile') {
+        // Only switch to desktop if screen is large enough and currently on mobile
+        setDeviceView('desktop')
       }
     }
 
@@ -548,35 +552,35 @@ export default function OrdersPage() {
             </div>
             
             <div className="flex items-center space-x-4">
-              {/* View Mode Switcher */}
-              <div className="flex items-center bg-gray-100 rounded-lg p-1">
-                <button
-                  onClick={() => setDeviceView('desktop')}
-                  className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center space-x-1 ${
-                    deviceView === 'desktop' 
-                      ? 'bg-white text-gray-900 shadow-sm' 
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
-                  <span className="hidden sm:inline">Desktop</span>
-                </button>
-                <button
-                  onClick={() => setDeviceView('mobile')}
-                  className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center space-x-1 ${
-                    deviceView === 'mobile' 
-                      ? 'bg-white text-gray-900 shadow-sm' 
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                  </svg>
-                  <span className="hidden sm:inline">Mobile</span>
-                </button>
-              </div>
+                {/* View Mode Switcher - Always visible */}
+                <div className="flex items-center bg-gray-100 rounded-lg p-1">
+                  <button
+                    onClick={() => setDeviceView('desktop')}
+                    className={`px-2 py-1.5 rounded-md text-xs font-medium transition-colors flex items-center space-x-1 ${
+                      deviceView === 'desktop' 
+                        ? 'bg-white text-gray-900 shadow-sm' 
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    <span className="text-xs">Desktop</span>
+                  </button>
+                  <button
+                    onClick={() => setDeviceView('mobile')}
+                    className={`px-2 py-1.5 rounded-md text-xs font-medium transition-colors flex items-center space-x-1 ${
+                      deviceView === 'mobile' 
+                        ? 'bg-white text-gray-900 shadow-sm' 
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                    <span className="text-xs">Mobile</span>
+                  </button>
+                </div>
 
               {/* Connection Status */}
               <div className="flex items-center space-x-2">
@@ -632,8 +636,8 @@ export default function OrdersPage() {
 
       {/* Main Content */}
       <main className={`${deviceView === 'mobile' ? 'max-w-sm mx-auto' : 'max-w-7xl mx-auto'} px-4 sm:px-6 lg:px-8 py-8`}>
-        {/* Error Message */}
-        {error && (
+          {/* Error Message */}
+          {error && (
           <div className="mb-6 bg-red-50 border-l-4 border-red-400 p-4 rounded-lg">
             <div className="flex items-center">
               <svg className="w-5 h-5 text-red-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -641,8 +645,8 @@ export default function OrdersPage() {
               </svg>
               <p className="text-red-700">{error}</p>
             </div>
-          </div>
-        )}
+            </div>
+          )}
 
         {/* Controls */}
         <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-gray-200/50 shadow-lg mb-8">
@@ -788,13 +792,13 @@ export default function OrdersPage() {
                 }`}
               >
                 {status === 'all' ? '🌟 All Orders' : `${status} (${ordersByStatus[status]?.length || 0})`}
-              </button>
-            ))}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
 
         {/* Orders Content */}
-        {isLoading ? (
+          {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent mx-auto mb-4"></div>
@@ -815,17 +819,17 @@ export default function OrdersPage() {
                 : selectedStatus === 'all' 
                   ? 'No orders have been placed yet.' 
                   : `No orders with status "${selectedStatus}" found.`
-              }
-            </p>
+                }
+              </p>
             {searchTerm && (
-              <button
+                          <button
                 onClick={() => setSearchTerm('')}
                 className="bg-blue-600 text-white px-6 py-2 rounded-xl hover:bg-blue-700 transition-colors"
-              >
+                          >
                 Clear Search
-              </button>
-            )}
-          </div>
+                          </button>
+                        )}
+                      </div>
         ) : viewMode === 'kanban' ? (
           /* Kanban View */
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
@@ -850,8 +854,8 @@ export default function OrdersPage() {
                   }`}>
                     {ordersByStatus[status]?.length || 0}
                   </span>
-                </div>
-                
+                    </div>
+
                 <div className="space-y-3 max-h-[calc(100vh-300px)] overflow-y-auto">
                   {ordersByStatus[status]?.map((order) => {
                     const isNewOrder = orders.indexOf(order) < newOrdersCount && order.status === 'PENDING'
@@ -859,10 +863,10 @@ export default function OrdersPage() {
                       <OrderCard key={order.id} order={order} isNew={isNewOrder} />
                     )
                   })}
-                </div>
-              </div>
-            ))}
-          </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
         ) : (
           /* List View */
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -872,8 +876,8 @@ export default function OrdersPage() {
                 <OrderCard key={order.id} order={order} isNew={isNewOrder} />
               )
             })}
-          </div>
-        )}
+            </div>
+          )}
       </main>
 
       {/* Order Detail Modal */}

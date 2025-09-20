@@ -116,8 +116,12 @@ export default function KitchenPage() {
   useEffect(() => {
     const checkMobile = () => {
       const mobile = window.innerWidth < 768
-      if (mobile && deviceView === 'desktop') {
+      // Always set to mobile if screen is small, regardless of current view mode
+      if (mobile) {
         setDeviceView('mobile')
+      } else if (window.innerWidth >= 768 && deviceView === 'mobile') {
+        // Only switch to desktop if screen is large enough and currently on mobile
+        setDeviceView('desktop')
       }
     }
 
@@ -269,33 +273,33 @@ export default function KitchenPage() {
 
           {/* Connection Status & Summary */}
           <div className="flex flex-col sm:flex-row gap-4 mt-4 lg:mt-0">
-            {/* View Mode Switcher */}
+            {/* View Mode Switcher - Always visible */}
             <div className="flex items-center bg-slate-800 rounded-lg p-1">
               <button
                 onClick={() => setDeviceView('desktop')}
-                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center space-x-1 ${
+                className={`px-2 py-1.5 rounded-md text-xs font-medium transition-colors flex items-center space-x-1 ${
                   deviceView === 'desktop' 
                     ? 'bg-slate-700 text-white shadow-sm' 
                     : 'text-slate-400 hover:text-slate-300'
                 }`}
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
-                <span className="hidden sm:inline">Desktop</span>
+                <span className="text-xs">Desktop</span>
               </button>
               <button
                 onClick={() => setDeviceView('mobile')}
-                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center space-x-1 ${
+                className={`px-2 py-1.5 rounded-md text-xs font-medium transition-colors flex items-center space-x-1 ${
                   deviceView === 'mobile' 
                     ? 'bg-slate-700 text-white shadow-sm' 
                     : 'text-slate-400 hover:text-slate-300'
                 }`}
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
                 </svg>
-                <span className="hidden sm:inline">Mobile</span>
+                <span className="text-xs">Mobile</span>
               </button>
             </div>
 
