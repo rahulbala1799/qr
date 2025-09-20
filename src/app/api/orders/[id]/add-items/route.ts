@@ -67,7 +67,7 @@ export async function POST(
         quantity: item.quantity,
         price: parseFloat(menuItem.price.toString()),
         notes: item.notes || null,
-        status: 'PENDING',
+        status: 'PENDING' as const,
         menuItemId: item.menuItemId,
         orderId: params.id
       })
