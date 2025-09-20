@@ -475,9 +475,9 @@ export default function TableOrderPage() {
             )}
             
             <div className={`bg-white rounded-lg shadow-sm ${showCart ? 'block' : 'hidden lg:block'} ${showCart ? 'fixed inset-0 z-50 flex flex-col lg:relative lg:shadow-sm lg:max-w-none lg:w-auto lg:h-auto animate-slide-in-right' : ''}`}>
-              <div className={`${showCart ? 'flex-1 overflow-y-auto' : ''} p-6`}>
-                {/* Enhanced Header */}
-                <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
+              {/* Desktop and Mobile Cart Header */}
+              <div className={`${showCart ? 'flex-shrink-0 border-b border-gray-200' : ''} p-6 ${showCart ? 'pb-4' : ''}`}>
+                <div className="flex justify-between items-center mb-4">
                   <div>
                     <h2 className="text-2xl font-bold text-gray-900 flex items-center space-x-2">
                       <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -498,7 +498,7 @@ export default function TableOrderPage() {
                 </div>
                 
                 {/* Enhanced Table Info */}
-                <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl">
+                <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl">
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                       <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -511,20 +511,22 @@ export default function TableOrderPage() {
                     </div>
                   </div>
                 </div>
-                
-                {cart.length === 0 ? (
-                  <div className="text-center py-12">
-                    <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
-                      </svg>
+              </div>
+
+              {/* Cart Content - Scrollable */}
+              <div className={`${showCart ? 'flex-1 overflow-y-auto' : ''}`}>
+                <div className="p-6 pt-4">
+                  {cart.length === 0 ? (
+                    <div className="text-center py-12">
+                      <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
+                        </svg>
+                      </div>
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">Your cart is empty</h3>
+                      <p className="text-gray-500">Add some delicious items from our menu!</p>
                     </div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">Your cart is empty</h3>
-                    <p className="text-gray-500">Add some delicious items from our menu!</p>
-                  </div>
-                ) : (
-                  <>
-                    {/* Enhanced Cart Items */}
+                  ) : (
                     <div className="space-y-4 mb-6">
                       {cart.map((item, index) => (
                         <div 
@@ -587,8 +589,8 @@ export default function TableOrderPage() {
                         </div>
                       ))}
                     </div>
-                  </>
-                )}
+                  )}
+                </div>
               </div>
 
               {/* Fixed Order Form Footer - Only show when cart has items */}
