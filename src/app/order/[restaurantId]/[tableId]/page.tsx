@@ -114,6 +114,7 @@ export default function TableOrderPage() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null)
+  const [mealSelections, setMealSelections] = useState<{[key: string]: boolean}>({})
 
   // Calculate flat array of menu items with category information
   const menuItems = useMemo(() => {
@@ -188,6 +189,14 @@ export default function TableOrderPage() {
     // Cart animation
     setCartAnimation('animate-bounce')
     setTimeout(() => setCartAnimation(''), 600)
+
+    // Clear meal selection after adding to cart
+    if (isMeal) {
+      setMealSelections(prev => ({
+        ...prev,
+        [item.id]: false
+      }))
+    }
 
     // Save cart to localStorage
     const updatedCart = existingItemIndex >= 0 
@@ -1153,35 +1162,41 @@ export default function TableOrderPage() {
                               {item.description && (
                                 <p className="text-slate-600 text-sm leading-relaxed mb-3">{item.description}</p>
                               )}
-                              <div className="text-xl font-bold text-indigo-600">
-                                {restaurant?.currency || '€'}{item.price.toFixed(2)}
-                              </div>
-                            </div>
-                            <div className="flex flex-col space-y-2">
-                              {isMainCategory(item.category) ? (
-                                /* Meal Options for Main Dishes */
-                                <div className="space-y-2">
-                                  <button
-                                    onClick={() => addToCart(item, false)}
-                                    className={`w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-2 rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl hover:scale-105 ${itemAnimations[item.id] || ''}`}
-                                  >
-                                    Add to Cart
-                                  </button>
-                                  <button
-                                    onClick={() => addToCart(item, true)}
-                                    className={`w-full bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 rounded-xl hover:from-orange-600 hover:to-red-600 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl hover:scale-105 text-sm ${itemAnimations[item.id] || ''}`}
-                                  >
-                                    🍟 Make it a MEAL +{restaurant?.currency || '€'}4.50
-                                  </button>
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-3">
+                                  <div className="text-xl font-bold text-indigo-600">
+                                    {restaurant?.currency || '€'}{item.price.toFixed(2)}
+                                  </div>
+                                  {isMainCategory(item.category) && (
+                                    <div className="flex items-center space-x-2">
+                                      <label className="flex items-center space-x-1 cursor-pointer group">
+                                        <input
+                                          type="checkbox"
+                                          checked={mealSelections[item.id] || false}
+                                          onChange={(e) => setMealSelections(prev => ({
+                                            ...prev,
+                                            [item.id]: e.target.checked
+                                          }))}
+                                          className="w-4 h-4 text-orange-600 bg-gray-100 border-gray-300 rounded focus:ring-orange-500 focus:ring-2"
+                                        />
+                                        <span className="text-sm font-medium text-orange-600 group-hover:text-orange-700">
+                                          🍟 Meal +{restaurant?.currency || '€'}4.50
+                                        </span>
+                                      </label>
+                                    </div>
+                                  )}
                                 </div>
-                              ) : (
-                                /* Regular Add to Cart for Non-Main Items */
                                 <button
-                                  onClick={() => addToCart(item, false)}
-                                  className={`bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-2 rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl hover:scale-105 ${itemAnimations[item.id] || ''}`}
+                                  onClick={() => addToCart(item, mealSelections[item.id] || false)}
+                                  className={`bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-2 rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl hover:scale-105 ${itemAnimations[item.id] || ''}`}
                                 >
                                   Add to Cart
                                 </button>
+                              </div>
+                              {isMainCategory(item.category) && mealSelections[item.id] && (
+                                <div className="text-sm text-orange-600 font-medium mt-1">
+                                  Total: {restaurant?.currency || '€'}{(item.price + 4.50).toFixed(2)} (includes fries & drink)
+                                </div>
                               )}
                             </div>
                           </div>
