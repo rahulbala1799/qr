@@ -75,61 +75,110 @@ export async function GET(request: NextRequest) {
       })).filter(order => order.orderItems.length > 0)
     }
 
-    // Group items by category for better kitchen organization
-    const itemsByCategory: Record<string, any[]> = {}
-    const allItems: any[] = []
-
-    filteredOrders.forEach(order => {
-      order.orderItems.forEach(item => {
-        const category = item.menuItem.category
-        if (!itemsByCategory[category]) {
-          itemsByCategory[category] = []
+    // Transform data to show complete orders with their items (ORDER-BASED DISPLAY)
+    const kitchenOrders = filteredOrders.map(order => {
+      // Filter out delivered items from kitchen display
+      const activeItems = order.orderItems.filter(item => item.status !== OrderStatus.DELIVERED)
+      
+      // Calculate order completion metrics
+      const totalItems = activeItems.length
+      const completedItems = activeItems.filter(item => item.status === OrderStatus.READY).length
+      const preparingItems = activeItems.filter(item => item.status === OrderStatus.PREPARING).length
+      const pendingItems = activeItems.filter(item => item.status === OrderStatus.PENDING).length
+      
+      // Determine if order is complete (all items ready) - will be removed from display
+      const isOrderComplete = totalItems > 0 && completedItems === totalItems
+      
+      // Calculate total batches for this order
+      const totalBatches = Math.max(...order.orderItems.map(oi => oi.addedInBatch), 1)
+      
+      // Group items by batch for better kitchen organization
+      const itemsByBatch: Record<number, any[]> = {}
+      activeItems.forEach(item => {
+        const batchNum = item.addedInBatch
+        if (!itemsByBatch[batchNum]) {
+          itemsByBatch[batchNum] = []
         }
-
-        const enrichedItem = {
+        itemsByBatch[batchNum].push({
           ...item,
-          order: {
-            id: order.id,
-            orderNumber: order.orderNumber,
-            customerName: order.customerName,
-            customerPhone: order.customerPhone,
-            tableNumber: order.table.tableNumber,
-            createdAt: order.createdAt,
-            orderStatus: order.status,
-            isReopened: order.status === OrderStatus.REOPENED,
-            totalBatches: Math.max(...order.orderItems.map(oi => oi.addedInBatch))
-          },
           batch: {
             number: item.addedInBatch,
             isOriginal: item.addedInBatch === 1,
             isNewAddition: item.addedInBatch > 1
           }
-        }
-
-        itemsByCategory[category].push(enrichedItem)
-        allItems.push(enrichedItem)
+        })
       })
+
+      return {
+        id: order.id,
+        orderNumber: order.orderNumber,
+        status: order.status,
+        createdAt: order.createdAt,
+        updatedAt: order.updatedAt,
+        customerName: order.customerName,
+        customerPhone: order.customerPhone,
+        tableNumber: order.table?.tableNumber || 'Unknown',
+        isReopened: order.status === OrderStatus.REOPENED,
+        totalBatches,
+        
+        // Order completion metrics
+        totalItems,
+        completedItems,
+        preparingItems,
+        pendingItems,
+        isOrderComplete,
+        completionPercentage: totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0,
+        
+        // Items grouped by batch for kitchen display
+        itemsByBatch,
+        
+        // All active items (for easy access)
+        items: activeItems.map(item => ({
+          ...item,
+          batch: {
+            number: item.addedInBatch,
+            isOriginal: item.addedInBatch === 1,
+            isNewAddition: item.addedInBatch > 1
+          }
+        })),
+
+        // Time-based priority calculation
+        orderAge: Math.floor((new Date().getTime() - new Date(order.createdAt).getTime()) / (1000 * 60)), // minutes
+        priority: order.status === OrderStatus.REOPENED ? 'HIGH' : 
+                 Math.floor((new Date().getTime() - new Date(order.createdAt).getTime()) / (1000 * 60)) > 30 ? 'URGENT' : 'NORMAL'
+      }
     })
 
-    // Get category statistics
-    const categoryStats = Object.keys(itemsByCategory).map(cat => ({
-      category: cat,
-      totalItems: itemsByCategory[cat].length,
-      pendingItems: itemsByCategory[cat].filter(item => item.status === 'PENDING').length,
-      preparingItems: itemsByCategory[cat].filter(item => item.status === 'PREPARING').length,
-      readyItems: itemsByCategory[cat].filter(item => item.status === 'READY').length
-    }))
+    // 🚀 FILTER OUT COMPLETED ORDERS (they disappear from kitchen display when all items are ready)
+    const activeKitchenOrders = kitchenOrders.filter(order => !order.isOrderComplete)
+
+    // 🕐 TIME-BASED ORDERING: FIFO with priority for reopened orders
+    activeKitchenOrders.sort((a, b) => {
+      // First: REOPENED orders get highest priority
+      if (a.isReopened && !b.isReopened) return -1
+      if (!a.isReopened && b.isReopened) return 1
+      
+      // Then: By order creation time (FIFO - oldest orders first)
+      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    })
+
+    // Calculate summary statistics
+    const totalActiveItems = activeKitchenOrders.reduce((sum, order) => sum + order.totalItems, 0)
+    const totalPendingItems = activeKitchenOrders.reduce((sum, order) => sum + order.pendingItems, 0)
+    const totalPreparingItems = activeKitchenOrders.reduce((sum, order) => sum + order.preparingItems, 0)
+    const totalReadyItems = activeKitchenOrders.reduce((sum, order) => sum + order.completedItems, 0)
 
     return NextResponse.json({
-      orders: filteredOrders,
-      itemsByCategory,
-      allItems,
-      categoryStats,
-      totalOrders: filteredOrders.length,
-      totalItems: allItems.length,
-      pendingItems: allItems.filter(item => item.status === 'PENDING').length,
-      preparingItems: allItems.filter(item => item.status === 'PREPARING').length,
-      readyItems: allItems.filter(item => item.status === 'READY').length
+      orders: activeKitchenOrders, // ORDER-BASED DISPLAY (not individual items)
+      summary: {
+        totalActiveOrders: activeKitchenOrders.length,
+        totalActiveItems,
+        totalPendingItems,
+        totalPreparingItems,
+        totalReadyItems,
+        urgentOrders: activeKitchenOrders.filter(order => order.priority === 'URGENT').length,
+        reopenedOrders: activeKitchenOrders.filter(order => order.isReopened).length
+      }
     })
 
   } catch (error) {
