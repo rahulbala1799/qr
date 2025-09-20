@@ -10,6 +10,7 @@ interface MenuItem {
   description: string | null
   price: number
   image: string | null
+  category: string
 }
 
 interface CartItem {
@@ -39,7 +40,47 @@ export default function TableOrderPage() {
   const router = useRouter()
   const restaurantId = params.restaurantId as string
   const tableId = params.tableId as string
-  
+
+  // Category icon mapping
+  const getCategoryIcon = (category: string) => {
+    const lowerCategory = category.toLowerCase()
+    if (lowerCategory.includes('appetizer') || lowerCategory.includes('starter')) {
+      return '🥗'
+    } else if (lowerCategory.includes('main') || lowerCategory.includes('entree')) {
+      return '🍽️'
+    } else if (lowerCategory.includes('dessert') || lowerCategory.includes('sweet')) {
+      return '🍰'
+    } else if (lowerCategory.includes('drink') || lowerCategory.includes('beverage')) {
+      return '🥤'
+    } else if (lowerCategory.includes('pizza')) {
+      return '🍕'
+    } else if (lowerCategory.includes('burger')) {
+      return '🍔'
+    } else if (lowerCategory.includes('salad')) {
+      return '🥗'
+    } else if (lowerCategory.includes('soup')) {
+      return '🍲'
+    } else if (lowerCategory.includes('pasta') || lowerCategory.includes('noodle')) {
+      return '🍝'
+    } else if (lowerCategory.includes('seafood') || lowerCategory.includes('fish')) {
+      return '🐟'
+    } else if (lowerCategory.includes('meat') || lowerCategory.includes('steak')) {
+      return '🥩'
+    } else if (lowerCategory.includes('chicken')) {
+      return '🍗'
+    } else if (lowerCategory.includes('vegetarian') || lowerCategory.includes('vegan')) {
+      return '🌱'
+    } else if (lowerCategory.includes('snack')) {
+      return '🍿'
+    } else if (lowerCategory.includes('coffee') || lowerCategory.includes('tea')) {
+      return '☕'
+    } else if (lowerCategory.includes('alcohol') || lowerCategory.includes('wine') || lowerCategory.includes('beer')) {
+      return '🍷'
+    } else {
+      return '🍽️'
+    }
+  }
+
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null)
   const [table, setTable] = useState<Table | null>(null)
   const [menu, setMenu] = useState<Record<string, MenuItem[]>>({})
@@ -58,6 +99,35 @@ export default function TableOrderPage() {
   const [activeCategory, setActiveCategory] = useState<string>('')
   const [cartAnimation, setCartAnimation] = useState('')
   const [itemAnimations, setItemAnimations] = useState<Record<string, string>>({})
+  const [showCategoryView, setShowCategoryView] = useState(true)
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  const [searchQuery, setSearchQuery] = useState('')
+
+  // Calculate flat array of menu items
+  const menuItems = useMemo(() => {
+    return Object.values(menu).flat()
+  }, [menu])
+
+  // Filter menu items based on search and category
+  const filteredMenuItems = useMemo(() => {
+    let filtered = menuItems
+    
+    // Filter by search query
+    if (searchQuery.trim()) {
+      filtered = filtered.filter((item: MenuItem) => 
+        item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (item.description && item.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        item.category.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    }
+    
+    // Filter by selected category
+    if (selectedCategory && selectedCategory !== 'all') {
+      filtered = filtered.filter((item: MenuItem) => item.category === selectedCategory)
+    }
+    
+    return filtered
+  }, [menuItems, searchQuery, selectedCategory])
 
   // Load cart from localStorage on mount
   useEffect(() => {
@@ -812,174 +882,203 @@ export default function TableOrderPage() {
         </div>
       )}
 
-      {/* Menu Section - Hide when tracking order */}
+      {/* World-Class Menu Experience - Hide when tracking order */}
       {!isTrackingOrder && (
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Menu */}
-            <div className="lg:col-span-2">
-            {categories.length === 0 ? (
-              <div className="text-center py-12">
-                <h2 className="text-xl font-semibold text-gray-900 mb-2">No Menu Items Available</h2>
-                <p className="text-gray-600">This restaurant hasn&apos;t added any menu items yet.</p>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {showCategoryView ? (
+            /* Category Selection View */
+            <div className="space-y-8">
+              {/* Search Bar */}
+              <div className="max-w-2xl mx-auto">
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <svg className="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Search for delicious food..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="block w-full pl-12 pr-4 py-4 border-0 rounded-2xl bg-white/80 backdrop-blur-sm shadow-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-lg placeholder-slate-400"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      className="absolute inset-y-0 right-0 pr-4 flex items-center"
+                    >
+                      <svg className="h-5 w-5 text-slate-400 hover:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
               </div>
-            ) : (
-              <div className="space-y-8">
-                {categories.map((category) => (
-                  <div key={category} id={`category-${category}`} className="bg-white rounded-lg shadow-sm overflow-hidden">
-                    <div className="bg-primary-600 px-6 py-4">
-                      <h2 className="text-xl font-semibold text-white">{category}</h2>
-                    </div>
-                    <div className="divide-y divide-gray-200">
-                      {menu[category].map((item, index) => (
-                        <div 
-                          key={item.id} 
-                          className="p-6 hover:bg-gray-50 transition-colors duration-200"
-                          style={{
-                            animation: `fadeInUp 0.6s ease-out ${index * 0.1}s both`
-                          }}
-                        >
-                          <div className="flex items-start space-x-4">
-                            {item.image && (
-                              <div className="w-20 h-20 relative flex-shrink-0 overflow-hidden rounded-lg hover:scale-105 transition-transform duration-300">
-                                <Image
-                                  src={item.image}
-                                  alt={item.name}
-                                  fill
-                                  className="object-cover"
-                                />
-                              </div>
-                            )}
-                            <div className="flex-1">
-                              <div className="flex items-start justify-between">
-                                <div className="flex-1 mr-4">
-                                  <h3 className="text-lg font-semibold text-gray-900 hover:text-primary-600 transition-colors">{item.name}</h3>
-                                  {item.description && (
-                                    <p className="text-gray-600 mt-1 text-sm leading-relaxed">{item.description}</p>
-                                  )}
-                                </div>
-                                <div className="text-right flex-shrink-0">
-                                  <p className="text-xl font-bold text-primary-600 mb-2">{restaurant?.currency || '€'}{item.price.toFixed(2)}</p>
-                                  <button
-                                    onClick={() => addToCart(item)}
-                                    className={`bg-gradient-to-r from-primary-600 to-primary-700 text-white px-6 py-2 rounded-full hover:from-primary-700 hover:to-primary-800 transition-all duration-300 text-sm font-medium shadow-lg hover:shadow-xl hover:scale-105 ${itemAnimations[item.id] || ''}`}
-                                  >
-                                    <span className="flex items-center space-x-2">
-                                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                      </svg>
-                                      <span>Add to Cart</span>
-                                    </span>
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
+
+              {/* Category Tiles */}
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {/* All Items Category */}
+                <div
+                  onClick={() => {
+                    setSelectedCategory('all')
+                    setShowCategoryView(false)
+                  }}
+                  className="group relative bg-gradient-to-br from-indigo-500 to-purple-600 rounded-3xl p-6 cursor-pointer transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-2xl"
+                >
+                  <div className="text-center">
+                    <div className="text-4xl mb-3 group-hover:scale-110 transition-transform duration-300">🌟</div>
+                    <h3 className="text-white font-bold text-lg mb-1">All Items</h3>
+                    <p className="text-indigo-100 text-sm">View everything</p>
+                    <div className="absolute inset-0 bg-white/20 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  </div>
+                </div>
+
+                {/* Category Tiles */}
+                {categories.map((category, index) => (
+                  <div
+                    key={category}
+                    onClick={() => {
+                      setSelectedCategory(category)
+                      setShowCategoryView(false)
+                    }}
+                    className="group relative bg-white/80 backdrop-blur-sm rounded-3xl p-6 cursor-pointer transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-2xl border border-white/40"
+                    style={{
+                      animation: `fadeInUp 0.6s ease-out ${index * 0.1}s both`
+                    }}
+                  >
+                    <div className="text-center">
+                      <div className="text-4xl mb-3 group-hover:scale-110 transition-transform duration-300">
+                        {getCategoryIcon(category)}
+                      </div>
+                      <h3 className="text-slate-900 font-bold text-lg mb-1">{category}</h3>
+                      <p className="text-slate-600 text-sm">
+                        {menu[category]?.length || 0} items
+                      </p>
+                      <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-purple-600/10 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     </div>
                   </div>
                 ))}
               </div>
-            )}
-          </div>
 
-          {/* Cart Summary - Desktop Only - Hide when tracking order */}
-          {!isTrackingOrder && (
-            <div className="hidden lg:block lg:col-span-1">
-            <div className="sticky top-4 bg-white rounded-lg shadow-sm p-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Your Order</h2>
-              
-              {/* Table Info */}
-              <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                <div className="flex items-center space-x-2">
-                  <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              {/* Quick Stats */}
+              <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/40">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                  <div>
+                    <div className="text-2xl font-bold text-slate-900">{categories.length}</div>
+                    <div className="text-sm text-slate-600">Categories</div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-slate-900">{menuItems.length}</div>
+                    <div className="text-sm text-slate-600">Total Items</div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-slate-900">{cart.length}</div>
+                    <div className="text-sm text-slate-600">In Cart</div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-indigo-600">{restaurant?.currency || '€'}{cart.reduce((sum, item) => sum + (item.menuItem.price * item.quantity), 0).toFixed(2)}</div>
+                    <div className="text-sm text-slate-600">Cart Total</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            /* Menu Items View */
+            <div className="space-y-6">
+              {/* Back Button and Search */}
+              <div className="flex items-center justify-between">
+                <button
+                  onClick={() => setShowCategoryView(true)}
+                  className="flex items-center space-x-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-2xl hover:bg-white transition-colors shadow-lg"
+                >
+                  <svg className="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                   </svg>
-                  <span className="font-medium text-blue-900">Table {table.tableNumber}</span>
+                  <span className="font-semibold text-slate-700">Back to Categories</span>
+                </button>
+                
+                <div className="flex items-center space-x-2">
+                  <div className="text-2xl">{selectedCategory === 'all' ? '🌟' : getCategoryIcon(selectedCategory || '')}</div>
+                  <h2 className="text-2xl font-bold text-slate-900">
+                    {selectedCategory === 'all' ? 'All Items' : selectedCategory}
+                  </h2>
                 </div>
               </div>
 
-              {cart.length === 0 ? (
-                <div className="text-center py-8">
-                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
+              {/* Search in Menu */}
+              <div className="max-w-md">
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg className="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                   </div>
-                  <h3 className="font-medium text-gray-900 mb-1">Your cart is empty</h3>
-                  <p className="text-gray-500 text-sm">Add items from the menu</p>
+                  <input
+                    type="text"
+                    placeholder="Search items..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="block w-full pl-10 pr-3 py-2 border-0 rounded-xl bg-white/80 backdrop-blur-sm shadow-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm placeholder-slate-400"
+                  />
                 </div>
-              ) : (
-                <>
-                  <div className="space-y-3 mb-4 max-h-60 overflow-y-auto">
-                    {cart.map((item) => (
-                      <div key={item.menuItem.id} className="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
-                        <div className="flex-1">
-                          <h3 className="font-medium text-gray-900 text-sm">{item.menuItem.name}</h3>
-                          <p className="text-xs text-gray-600">{item.quantity}x {restaurant?.currency || '€'}{item.menuItem.price.toFixed(2)}</p>
-                        </div>
-                        <p className="font-medium text-primary-600">{restaurant?.currency || '€'}{(item.menuItem.price * item.quantity).toFixed(2)}</p>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  <div className="border-t pt-4 mb-4">
-                    <div className="flex justify-between text-lg font-bold">
-                      <span>Total:</span>
-                      <span>{restaurant?.currency || '€'}{getTotalAmount().toFixed(2)}</span>
-                    </div>
-                  </div>
+              </div>
 
-                  <button
-                    onClick={() => router.push(`/cart/${restaurantId}/${tableId}`)}
-                    className="w-full bg-primary-600 text-white py-3 rounded-lg hover:bg-primary-700 font-medium"
-                  >
-                    View Cart & Checkout
-                  </button>
-                </>
-              )}
+              {/* Menu Items Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {filteredMenuItems.length === 0 ? (
+                  <div className="col-span-full text-center py-12">
+                    <div className="text-6xl mb-4">🔍</div>
+                    <h3 className="text-xl font-semibold text-slate-900 mb-2">No items found</h3>
+                    <p className="text-slate-600">Try searching for something else or go back to categories.</p>
+                  </div>
+                ) : (
+                  filteredMenuItems.map((item: MenuItem, index: number) => (
+                    <div 
+                      key={item.id}
+                      className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-white/40"
+                      style={{
+                        animation: `fadeInUp 0.6s ease-out ${index * 0.1}s both`
+                      }}
+                    >
+                      <div className="flex items-start space-x-4">
+                        {item.image && (
+                          <div className="w-20 h-20 relative flex-shrink-0 overflow-hidden rounded-xl hover:scale-105 transition-transform duration-300">
+                            <Image
+                              src={item.image}
+                              alt={item.name}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                        )}
+                        <div className="flex-1">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1 mr-4">
+                              <h3 className="text-lg font-bold text-slate-900 mb-1">{item.name}</h3>
+                              {item.description && (
+                                <p className="text-slate-600 text-sm leading-relaxed mb-3">{item.description}</p>
+                              )}
+                              <div className="text-xl font-bold text-indigo-600">
+                                {restaurant?.currency || '€'}{item.price.toFixed(2)}
+                              </div>
+                            </div>
+                            <button
+                              onClick={() => addToCart(item)}
+                              className={`bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-2 rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl hover:scale-105 ${itemAnimations[item.id] || ''}`}
+                            >
+                              Add to Cart
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
             </div>
-          </div>
           )}
         </div>
-      </div>
-      )}
-
-      {/* Floating Buttons - Hide when tracking order */}
-      {!isTrackingOrder && (
-      <div className="fixed bottom-4 right-4 z-30 flex flex-col space-y-2">
-        {/* Back to Top Button */}
-        {categories.length > 1 && (
-          <button
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="bg-gray-600 text-white p-3 rounded-full shadow-lg hover:bg-gray-700 transition-colors"
-            title="Back to top"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
-            </svg>
-          </button>
-        )}
-        
-        {/* Cart Button for Mobile */}
-        {cart.length > 0 && (
-          <button
-            onClick={() => router.push(`/cart/${restaurantId}/${tableId}`)}
-            className="bg-primary-600 text-white p-4 rounded-full shadow-lg hover:bg-primary-700 transition-colors"
-          >
-            <div className="flex items-center space-x-2">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
-              </svg>
-              <span className="font-semibold">{cart.reduce((sum, item) => sum + item.quantity, 0)}</span>
-            </div>
-            <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-              {restaurant?.currency || '€'}{getTotalAmount().toFixed(0)}
-            </div>
-          </button>
-        )}
-      </div>
       )}
 
       {/* Custom CSS Animations */}
@@ -1058,6 +1157,15 @@ export default function TableOrderPage() {
           background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
           background-size: 200px 100%;
           animation: shimmer 1.5s infinite;
+        }
+
+        /* Hide scrollbar for category navigation */
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
         }
       `}</style>
     </div>
