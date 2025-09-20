@@ -431,10 +431,8 @@ export default function TableOrderPage() {
               ></div>
             )}
             
-            <div className={`bg-white rounded-lg shadow-sm ${showCart ? 'block' : 'hidden lg:block'} ${showCart ? 'fixed inset-0 z-50 lg:relative lg:shadow-sm lg:max-w-none lg:w-auto lg:h-auto' : ''}`}>
-              <div className={`${showCart ? 'h-full flex flex-col' : ''}`}>
-                {/* Cart Header - Fixed */}
-                <div className={`${showCart ? 'flex-shrink-0 border-b border-gray-200' : ''} p-6 ${showCart ? 'pb-4' : ''}`}>
+            <div className={`bg-white rounded-lg shadow-sm ${showCart ? 'block' : 'hidden lg:block'} ${showCart ? 'fixed inset-4 z-50 lg:relative lg:shadow-sm lg:max-w-none lg:w-auto lg:h-auto' : ''}`}>
+              <div className="p-6">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-lg font-semibold text-gray-900">Your Order</h2>
                   <button
@@ -448,20 +446,17 @@ export default function TableOrderPage() {
                 </div>
                 
                 {/* Table Info */}
-                <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
+                <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
                   <h3 className="font-medium text-blue-900">Table {table.tableNumber}</h3>
                   <p className="text-sm text-blue-700">Your order will be delivered to this table</p>
                 </div>
-                </div>
-
-                {/* Cart Content - Scrollable */}
-                <div className={`${showCart ? 'flex-1 overflow-y-auto' : ''}`}>
-                  <div className="p-6 pt-4">
+                
                 {cart.length === 0 ? (
                   <p className="text-gray-500 text-center py-8">Your cart is empty</p>
                 ) : (
                   <>
-                    <div className="space-y-4 mb-6">
+                    {/* Cart Items - Simple Scrollable */}
+                    <div className={`space-y-4 mb-6 ${showCart ? 'max-h-60 overflow-y-auto' : ''}`}>
                       {cart.map((item) => (
                         <div key={item.menuItem.id} className="border-b border-gray-200 pb-4">
                           <div className="flex justify-between items-start">
@@ -502,15 +497,10 @@ export default function TableOrderPage() {
                       ))}
                     </div>
 
-                  </>
-                )}
-                  </div>
-                </div>
+                    </div>
 
-                {/* Order Form - Fixed Footer */}
-                {cart.length > 0 && (
-                  <div className={`${showCart ? 'flex-shrink-0 border-t border-gray-200 bg-white' : 'border-t border-gray-200 pt-4'}`}>
-                    <div className="p-6">
+                    {/* Order Form */}
+                    <div className="border-t border-gray-200 pt-4">
                       <div className="flex justify-between text-lg font-semibold mb-4">
                         <span>Total:</span>
                         <span>{restaurant?.currency || '€'}{getTotalAmount().toFixed(2)}</span>
@@ -566,7 +556,7 @@ export default function TableOrderPage() {
                         </button>
                       </div>
                     </div>
-                  </div>
+                  </>
                 )}
               </div>
             </div>
