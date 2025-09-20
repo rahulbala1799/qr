@@ -1,0 +1,697 @@
+{
+  "timestamp": "2025-09-20T14:29:09.485Z",
+  "restaurants": [
+    {
+      "email": "rahulbala1799@gmail.com",
+      "name": "Burger Pit",
+      "description": "Burger",
+      "address": "Coolmine",
+      "phone": "0831598360",
+      "website": null,
+      "logo": null,
+      "currency": "€",
+      "isActive": true,
+      "isPublished": true,
+      "menuItems": [
+        {
+          "name": "Hotline Rings",
+          "description": "Golden fried, thick-cut Onion Rings. Contains Gluten (Wheat).",
+          "price": "6.5",
+          "category": "Starters",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Popcorn Chicken",
+          "description": "Pop it like it's hot. Contains Gluten (Wheat).",
+          "price": "7.5",
+          "category": "Starters",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Halloumi Lover",
+          "description": "Fried Halloumi Sticks with signature Toppings. Contains Dairy.",
+          "price": "7.5",
+          "category": "Starters",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Sliders",
+          "description": "3 Mini Beef Patties topped with crispy Onions, Cheese & Pickles on toasted Mini Buns. Contains Gluten (Wheat), Eggs, Milk",
+          "price": "8.5",
+          "category": "Starters",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Love Me Tenders",
+          "description": "Fresh Chicken Strips seasoned just right. Contains Gluten (Wheat).",
+          "price": "7.5",
+          "category": "Starters",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Put a Wing on It",
+          "description": "Juicy Buffalo Wings bursting with flavour served with Blue Cheese Dip.",
+          "price": "7.5",
+          "category": "Starters",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Let's Nacho",
+          "description": "Hot, crispy Tortilla Chips topped with our house Sides. Contains Gluten (Wheat).",
+          "price": "8.5",
+          "category": "Starters",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Original Burger",
+          "description": "Double Beef Patties topped with Cheese, Lettuce, Tomatoes, Onions & Secret Burger Sauce. Contains Gluten (Wheat), Eggs, Milk",
+          "price": "10.5",
+          "category": "Burgers",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "The Guac Burger",
+          "description": "Double Beef Burger topped with Guacamole, Monterey Jack Cheese & Ranch Sauce. Contains Gluten (Wheat), Eggs, Milk",
+          "price": "13.5",
+          "category": "Burgers",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Smoky Bandit Burger",
+          "description": "Double Beef Burger topped with Crispy Fried Onions, Smoky Apple Wood Cheese & House BBQ Sauce. Contains Gluten (Wheat), Eggs, Milk",
+          "price": "12.5",
+          "category": "Burgers",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "The Italian Job Burger",
+          "description": "Grilled Chicken Breast topped with Pico De Gallo, Avocado & Pesto Mayonnaise. Contains Gluten (Wheat), Eggs, Milk",
+          "price": "12.5",
+          "category": "Burgers",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "The Classic Burger",
+          "description": "Crisp Fillet topped with Melted Cheese Lettuce & Burger Sauce. Contains Gluten (Wheat), Eggs, Milk",
+          "price": "10.5",
+          "category": "Burgers",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Chipotle Crunch Burger",
+          "description": "Double Beef Burger topped with Crunchy Homemade Onion Rings, Spicy Cheese & Chipotle Sauce. Contains Gluten (Wheat), Eggs, Milk",
+          "price": "12.5",
+          "category": "Burgers",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Shroom Service Burger",
+          "description": "Double Beef Burger topped with Sautéed Mushrooms, Caramelized Onions & Peppers with Swiss Cheese & Dijon Mustard Mayonnaise. Contains Gluten (Wheat), Eggs, Milk",
+          "price": "13.5",
+          "category": "Burgers",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Angry Bird Burger",
+          "description": "Fried Buttermilk Battered Chicken Breast topped with House Slaw, Cheese, Jalapeños & Chilli Mayonnaise. Contains Gluten (Wheat), Eggs, Milk",
+          "price": "12.5",
+          "category": "Burgers",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "O'Falafel Burger",
+          "description": "Homemade Chickpea Patty topped with Halloumi Grilled Red Peppers & Harissa Mayonnaise. Contains Gluten (Wheat), Eggs, Milk",
+          "price": "9.99",
+          "category": "Burgers",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Eggcelence Burger",
+          "description": "Double Beef Patty with a Free-Range Fried Egg, Bacon Rashers, Crispy Onions, Hash Brown, Cheese, Tomatoes, Lettuce & Cashel Blue Sauce. Contains Gluten (Wheat), Eggs, Milk",
+          "price": "14.99",
+          "category": "Burgers",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Chuck E Cheese Burger",
+          "description": "Triple Beef Patty topped with Pepperoni, Hotdogs, Bacon Rashers & Gouda Cheese with Mustard & Ketchup. Contains Gluten (Wheat), Eggs, Milk",
+          "price": "14.99",
+          "category": "Burgers",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Double or Nothing Burger",
+          "description": "Popular!! Fried or grilled? Why not one of each? Sink your teeth into our loaded fried & grilled Chicken burger with Smoked Cheese, Red Onions, Lettuce Cajun Mayonnaise & Hot BBQ Sauce. Contains Gluten (Wheat), Eggs, Milk",
+          "price": "14.99",
+          "category": "Burgers",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Big Hulk Burger",
+          "description": "Triple Beef Patties topped with Cheese, Pickles, Tomatoes, Onions & Secret Sauce. Contains Gluten (Wheat), Eggs, Milk",
+          "price": "13.99",
+          "category": "Burgers",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "The Tower Burger",
+          "description": "Crisp Fillet topped with Hash Browns, Bacon & Melted Cheese, Fried Onions & 2 Tenders. Contains Gluten (Wheat), Eggs, Milk",
+          "price": "13.99",
+          "category": "Burgers",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Pleased to Meat You Burger",
+          "description": "Folded Pizza with Beef Mince, Red Onions, Peppers & Jalapeños. Contains Gluten (Wheat), Eggs, Milk",
+          "price": "14.99",
+          "category": "Burgers",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Straight Outta' Philly Wrap",
+          "description": "Slices of Tender Beef Steak topped with Peppers, Onions, & smothered in Cheese Sauce. Contains Gluten (Wheat), Eggs, Milk",
+          "price": "12.99",
+          "category": "Wraps",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Boom Chicka Boom Wrap",
+          "description": "Popular!! Grilled Chicken Kebab Pieces with Onions, Tomatoes, Lettuce & Homemade Kebab Sauce. Contains Gluten (Wheat), Eggs, Milk",
+          "price": "11.99",
+          "category": "Wraps",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "The Mashup Wrap",
+          "description": "Buttermilk Fried Chicken with Crispy Bacon, Greens & Secret Sauce. Contains Gluten (Wheat), Eggs, Milk",
+          "price": "10.5",
+          "category": "Wraps",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Donatello Doner Wrap",
+          "description": "Donner Meat paired with Onions, Tomatoes, Lettuce & Homemade Kebab Sauce. Contains Gluten (Wheat), Eggs, Milk",
+          "price": "11.99",
+          "category": "Wraps",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "The Rooster Wrap",
+          "description": "Crispy Chicken Goujon with Cheese, Salad & choice of your Sauce (BBQ or Sweet Chilli or Peri Peri). Contains Gluten (Wheat), Eggs, Milk",
+          "price": "10.5",
+          "category": "Wraps",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Fella Falafel Wrap",
+          "description": "Homemade Falafel Patty topped with Hummus Salad & House Dressing. Contains Gluten (Wheat), Eggs, Milk",
+          "price": "9.5",
+          "category": "Wraps",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Cheese Please (The Classic)",
+          "description": "Loaded with Mozzarella Cheese, a sprinkle of mix herbs. Contains Gluten (Wheat), Eggs, Milk",
+          "price": "9.99",
+          "category": "Pizza",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Tandoori Nights (Asian)",
+          "description": "Asian style Tandoori Chicken, topped with Red Onions, Peppers, Sweetcorn, Jalapeños. Contains Gluten (Wheat), Eggs, Milk",
+          "price": "9.99",
+          "category": "Pizza",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Farm House (Real Fresh)",
+          "description": "A fresh Veggies overload of Onions, crunchy Peppers, succulent Mushrooms, juicy Tomatoes & Sweetcorn. Contains Gluten (Wheat), Eggs, Milk",
+          "price": "9.99",
+          "category": "Pizza",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Show Me the Pepperoni (American)",
+          "description": "Only for passionate Pepperoni fans. Contains Gluten (Wheat), Eggs, Milk",
+          "price": "9.99",
+          "category": "Pizza",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Pollo (Tuscan)",
+          "description": "Smoked Chicken, Sausage, Olives, Green Peppers, Mushrooms. Contains Gluten (Wheat), Eggs, Milk",
+          "price": "9.99",
+          "category": "Pizza",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Blazing Behari (Pakistani)",
+          "description": "Behari Masala marinated Chicken, Onions & Green Chillies topped with Mozzarella Cheese. Contains Gluten (Wheat), Eggs, Milk",
+          "price": "9.99",
+          "category": "Pizza",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Capriciosa (Hawaiian)",
+          "description": "Classic Ham & Mushrooms. Contains Gluten (Wheat), Eggs, Milk",
+          "price": "9.99",
+          "category": "Pizza",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Smokin' Hot (Mexican)",
+          "description": "Mince, Jalapeños, Onions, Mixed Peppers with a sprinkle of crushed Chilli Flakes. Contains Gluten (Wheat), Eggs, Milk",
+          "price": "9.99",
+          "category": "Pizza",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Pizza À Portuguesa (Portuguese)",
+          "description": "Fire up your taste buds with Spiced Chicken, Olives, Jalapeños & drizzled with Hot Peri Peri Sauce. Contains Gluten (Wheat), Eggs, Milk",
+          "price": "9.99",
+          "category": "Pizza",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Gyro (Greek)",
+          "description": "Carved Donner Kebab Meat topped with Mixed Salad, a drizzle of Garlic Acile. Contains Gluten (Wheat), Eggs, Milk",
+          "price": "9.99",
+          "category": "Pizza",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Achari (Picklish)",
+          "description": "Chilli Chicken, onions, peppers, olives, jalapenos and pickle. Contains Gluten (Wheat), Eggs, Milk",
+          "price": "9.99",
+          "category": "Pizza",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Ranch Sicilian Pizza",
+          "description": "Spicy Pulled Beef, Bacon, Mushrooms, Cherry Tomatoes, Peppers & Black Olives topped with Ranch Sauce & a touch of Garlic Oil. Contains Gluten (Wheat), Eggs, Milk",
+          "price": "10.99",
+          "category": "Pizza",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Paneer Tikka",
+          "description": "Spicy Paneer, red onions, tomatoes, jalapenos and topped with spicy mayo. Contains Gluten (Wheat), Eggs, Milk",
+          "price": "10.99",
+          "category": "Pizza",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Chicken Fiesta Calzone",
+          "description": "Folded Pizza with Chicken, Spinach, Mushrooms, Olives & Onions. Contains Gluten (Wheat), Eggs, Milk",
+          "price": "11.99",
+          "category": "Calzone",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Donner Trump Calzone",
+          "description": "10\". Why have abs when you can have Kebabs? Folded Pizza loaded with Donner Meat. Contains Gluten (Wheat), Eggs, Milk",
+          "price": "11.99",
+          "category": "Calzone",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Prince of Mince Calzone",
+          "description": "Folded Pizza with Beef Mince, Red Onions, Peppers & Jalapeños. Contains Gluten (Wheat), Eggs, Milk",
+          "price": "11.99",
+          "category": "Calzone",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Desi Fold",
+          "description": "Spicy chicken Tikka, Jalapenos, Onions and peppers",
+          "price": "11.99",
+          "category": "Calzone",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Fiery Chicken Wings",
+          "description": "Tossed in Melted Butter & Hot Sauce.",
+          "price": "7.5",
+          "category": "Sides",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Wild Wedges",
+          "description": "Seasoned to perfection.",
+          "price": "6.5",
+          "category": "Sides",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Garlic Cheesy Bread",
+          "description": "Hot & Cheesy, enough said. Contains Gluten (Wheat), Eggs, Milk",
+          "price": "6.5",
+          "category": "Sides",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Crispy Onion Rings",
+          "description": "Contains Gluten (Wheat)",
+          "price": "6.5",
+          "category": "Sides",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Popcorn Bites",
+          "description": "Contains Gluten (Wheat)",
+          "price": "6.5",
+          "category": "Sides",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Love the Way You Fry",
+          "description": "Classic fries",
+          "price": "5",
+          "category": "Sides",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Masala Punched",
+          "description": "Spiced fries",
+          "price": "6.5",
+          "category": "Sides",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Dead in Cheese",
+          "description": "Cheesy fries. Contains Milk",
+          "price": "6.5",
+          "category": "Sides",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Mix It Up",
+          "description": "Mixed fries",
+          "price": "5.99",
+          "category": "Sides",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Garlic Cheese Fries",
+          "description": "Garlic and cheese fries. Contains Eggs, Milk",
+          "price": "6.5",
+          "category": "Sides",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Chic Bit",
+          "description": "Chicken bites. Contains Gluten (Wheat)",
+          "price": "9.99",
+          "category": "Sides",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Gravy One",
+          "description": "Fries with gravy. Contains Gluten (Wheat)",
+          "price": "5.5",
+          "category": "Sides",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Tub of Coleslaw",
+          "description": "Contains Eggs",
+          "price": "3.5",
+          "category": "Sides",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Tub of Gravy",
+          "description": "Contains Gluten (Wheat)",
+          "price": "3.5",
+          "category": "Sides",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Nutella Rolls",
+          "description": "Contains Gluten (Wheat)",
+          "price": "6.5",
+          "category": "Desserts",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Selection of Ice Cream",
+          "description": "Various ice cream flavors",
+          "price": "5.5",
+          "category": "Desserts",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Sweetie Pie",
+          "description": "Contains Gluten (Wheat)",
+          "price": "6.5",
+          "category": "Desserts",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Cookie Monster",
+          "description": "Soft Gooey, chocolate chip cookies",
+          "price": "6.5",
+          "category": "Desserts",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Garlic Sauce",
+          "description": "Contains Eggs",
+          "price": "1.5",
+          "category": "Sauces",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Peri Peri Mayonnaise",
+          "description": "Contains Eggs",
+          "price": "1.5",
+          "category": "Sauces",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Cheese Sauce",
+          "description": "Contains Milk",
+          "price": "1.5",
+          "category": "Sauces",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Curry Sauce",
+          "description": "Spicy curry sauce",
+          "price": "1.5",
+          "category": "Sauces",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Hot Sauce",
+          "description": "Spicy hot sauce",
+          "price": "1.5",
+          "category": "Sauces",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Sweet Chilli Sauce",
+          "description": "Sweet and spicy",
+          "price": "1.5",
+          "category": "Sauces",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Ranch Sauce",
+          "description": "Contains Eggs, Milk",
+          "price": "1.5",
+          "category": "Sauces",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Mustard Mayonnaise",
+          "description": "Contains Eggs, Mustard",
+          "price": "1.5",
+          "category": "Sauces",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "BBQ Sauce",
+          "description": "Classic BBQ flavor",
+          "price": "1.5",
+          "category": "Sauces",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Oreo Crush Milkshake",
+          "description": "Oreo cookie milkshake",
+          "price": "6.5",
+          "category": "Milkshakes",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Strawberry Sensation Milkshake",
+          "description": "Strawberry milkshake",
+          "price": "6.5",
+          "category": "Milkshakes",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Nutty Nutella Milkshake",
+          "description": "Nutella milkshake",
+          "price": "6.5",
+          "category": "Milkshakes",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Fudgey Chocolate Milkshake",
+          "description": "Chocolate milkshake",
+          "price": "6.5",
+          "category": "Milkshakes",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Mango Man Milkshake",
+          "description": "Mango milkshake",
+          "price": "6.5",
+          "category": "Milkshakes",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Coca-Cola Classic 330ml",
+          "description": "Soda",
+          "price": "2.5",
+          "category": "Drinks",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Fanta Orange 330ml",
+          "description": "Soda",
+          "price": "2.5",
+          "category": "Drinks",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Water",
+          "description": "Still water",
+          "price": "2.5",
+          "category": "Drinks",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Diet Coke 330ml",
+          "description": "Soda",
+          "price": "2.5",
+          "category": "Drinks",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "7 Up 330ml",
+          "description": "Soda",
+          "price": "2.5",
+          "category": "Drinks",
+          "image": null,
+          "isAvailable": true
+        },
+        {
+          "name": "Absolute Healthy Drink",
+          "description": "Healthy drink option",
+          "price": "3.5",
+          "category": "Drinks",
+          "image": null,
+          "isAvailable": true
+        }
+      ],
+      "tables": [
+        {
+          "tableNumber": "1",
+          "isActive": true
+        },
+        {
+          "tableNumber": "Table 2",
+          "isActive": true
+        },
+        {
+          "tableNumber": "10",
+          "isActive": true
+        }
+      ]
+    }
+  ]
+}

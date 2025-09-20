@@ -175,33 +175,64 @@ export default function CartPage() {
     setError('')
 
     try {
-      const orderData = {
-        restaurantId,
-        tableId,
-        items: cart.map(item => ({
-          menuItemId: item.menuItem.id,
-          quantity: item.quantity,
-          notes: item.notes,
-          price: item.menuItem.price
-        })),
-        customerName: customerName || 'Guest',
-        customerPhone,
-        notes,
-        totalAmount: getTotalAmount(),
-        estimatedTime
-      }
+      // Check if there's an existing order to add items to
+      const existingOrderData = localStorage.getItem(`placed_order_${restaurantId}_${tableId}`)
+      let response
 
-      const response = await fetch('/api/orders', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(orderData),
-      })
+      if (existingOrderData) {
+        // Add items to existing order
+        const { order } = JSON.parse(existingOrderData)
+        
+        const addItemsData = {
+          items: cart.map(item => ({
+            menuItemId: item.menuItem.id,
+            quantity: item.quantity,
+            notes: item.notes
+          }))
+        }
+
+        response = await fetch(`/api/orders/${order.id}/add-items`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(addItemsData),
+        })
+      } else {
+        // Create new order
+        const orderData = {
+          restaurantId,
+          tableId,
+          items: cart.map(item => ({
+            menuItemId: item.menuItem.id,
+            quantity: item.quantity,
+            notes: item.notes,
+            price: item.menuItem.price
+          })),
+          customerName: customerName || 'Guest',
+          customerPhone,
+          notes,
+          totalAmount: getTotalAmount(),
+          estimatedTime
+        }
+
+        response = await fetch('/api/orders', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(orderData),
+        })
+      }
 
       if (response.ok) {
         const result = await response.json()
-        setSuccess('Order placed successfully! Your order number is #' + result.order.orderNumber)
+        
+        if (existingOrderData) {
+          setSuccess('Items added to your existing order #' + result.order.orderNumber)
+        } else {
+          setSuccess('Order placed successfully! Your order number is #' + result.order.orderNumber)
+        }
         
         // Clear cart
         setCart([])

@@ -1,19 +1,16 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DATABASE_URL")
 }
 
 model Restaurant {
-  id          String   @id @default(cuid())
-  email       String   @unique
+  id          String     @id @default(cuid())
+  email       String     @unique
   password    String
   name        String
   description String?
@@ -21,87 +18,77 @@ model Restaurant {
   phone       String
   website     String?
   logo        String?
-  currency    String   @default("€")
-  isActive    Boolean  @default(true)
-  isPublished Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Relations
-  tables      Table[]
+  isActive    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  isPublished Boolean    @default(false)
+  currency    String     @default("€")
   menuItems   MenuItem[]
   orders      Order[]
+  tables      Table[]
 
   @@map("restaurants")
 }
 
 model Table {
-  id           String   @id @default(cuid())
+  id           String     @id @default(cuid())
   tableNumber  String
-  qrCode       String   @unique
-  isActive     Boolean  @default(true)
+  qrCode       String     @unique
+  isActive     Boolean    @default(true)
   restaurantId String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  // Relations
-  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
   orders       Order[]
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 
   @@map("tables")
 }
 
 model MenuItem {
-  id           String   @id @default(cuid())
+  id           String      @id @default(cuid())
   name         String
   description  String?
-  price        Decimal  @db.Decimal(10, 2)
+  price        Decimal     @db.Decimal(10, 2)
   category     String
   image        String?
-  isAvailable  Boolean  @default(true)
+  isAvailable  Boolean     @default(true)
   restaurantId String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  // Relations
-  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  restaurant   Restaurant  @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   orderItems   OrderItem[]
 
   @@map("menu_items")
 }
 
 model Order {
-  id           String      @id @default(cuid())
-  orderNumber  String      @unique
-  status       OrderStatus @default(PENDING)
-  totalAmount  Decimal     @db.Decimal(10, 2)
-  customerName String?
+  id            String      @id @default(cuid())
+  orderNumber   String      @unique
+  status        OrderStatus @default(PENDING)
+  totalAmount   Decimal     @db.Decimal(10, 2)
+  customerName  String?
   customerPhone String?
-  notes        String?
-  restaurantId String
-  tableId      String
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-
-  // Relations
-  restaurant   Restaurant  @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
-  table        Table       @relation(fields: [tableId], references: [id], onDelete: Cascade)
-  orderItems   OrderItem[]
+  notes         String?
+  restaurantId  String
+  tableId       String
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  orderItems    OrderItem[]
+  restaurant    Restaurant  @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  table         Table       @relation(fields: [tableId], references: [id], onDelete: Cascade)
 
   @@map("orders")
 }
 
 model OrderItem {
-  id         String  @id @default(cuid())
+  id         String   @id @default(cuid())
   quantity   Int
-  price      Decimal @db.Decimal(10, 2)
+  price      Decimal  @db.Decimal(10, 2)
   notes      String?
   orderId    String
   menuItemId String
-
-  // Relations
-  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   menuItem   MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   @@map("order_items")
 }
