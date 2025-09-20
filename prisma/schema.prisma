@@ -81,14 +81,19 @@ model Order {
 }
 
 model OrderItem {
-  id         String   @id @default(cuid())
+  id         String      @id @default(cuid())
   quantity   Int
-  price      Decimal  @db.Decimal(10, 2)
+  price      Decimal     @db.Decimal(10, 2)
   notes      String?
+  status     OrderStatus @default(PENDING)
   orderId    String
   menuItemId String
-  menuItem   MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  // Relations
   order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
 
   @@map("order_items")
 }
