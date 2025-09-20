@@ -29,12 +29,6 @@ export default function OrderPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
 
-  useEffect(() => {
-    if (restaurantId) {
-      fetchData()
-    }
-  }, [restaurantId, fetchData])
-
   const fetchData = useCallback(async () => {
     try {
       // Fetch restaurant data
@@ -57,6 +51,12 @@ export default function OrderPage() {
       setIsLoading(false)
     }
   }, [restaurantId])
+
+  useEffect(() => {
+    if (restaurantId) {
+      fetchData()
+    }
+  }, [restaurantId, fetchData])
 
   const selectTable = (tableId: string) => {
     router.push(`/order/${restaurantId}/${tableId}`)
