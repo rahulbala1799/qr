@@ -350,11 +350,10 @@ export default function TableOrderPage() {
         if (foundTable) {
           setTable(foundTable)
           setMenu(menuData.menu)
-          setCategories(menuData.categories)
-          // Set first category as active
-          if (menuData.categories.length > 0) {
-            setActiveCategory(menuData.categories[0])
-          }
+          // Add "All Items" to categories for top navigation
+          setCategories(['All Items', ...menuData.categories])
+          // Set "All Items" as active by default
+          setActiveCategory('All Items')
         } else {
           throw new Error('Table not found')
         }
@@ -406,14 +405,24 @@ export default function TableOrderPage() {
   // Scroll detection for category navigation
   useEffect(() => {
     const handleScroll = () => {
-      const categoryElements = categories.map(cat => ({
-        id: cat,
-        element: document.getElementById(`category-${cat}`)
-      })).filter(cat => cat.element)
+      const categoryElements = categories
+        .filter(cat => cat !== 'All Items')
+        .map(cat => ({
+          id: cat,
+          element: document.getElementById(`category-${cat}`)
+        }))
+        .filter(cat => cat.element)
 
       if (categoryElements.length === 0) return
 
       const scrollPosition = window.scrollY + 200 // Offset for sticky header
+      const menuElement = document.querySelector('[data-menu-items]')
+      
+      // If we're at the top of the menu, set "All Items" as active
+      if (menuElement && menuElement.getBoundingClientRect().top <= 200) {
+        setActiveCategory('All Items')
+        return
+      }
 
       for (let i = categoryElements.length - 1; i >= 0; i--) {
         const category = categoryElements[i]
@@ -436,9 +445,17 @@ export default function TableOrderPage() {
 
   const scrollToCategory = (category: string) => {
     setActiveCategory(category)
-    const element = document.getElementById(`category-${category}`)
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    if (category === 'All Items') {
+      // Scroll to top of menu items
+      const menuElement = document.querySelector('[data-menu-items]')
+      if (menuElement) {
+        menuElement.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    } else {
+      const element = document.getElementById(`category-${category}`)
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
     }
   }
 
@@ -802,8 +819,8 @@ export default function TableOrderPage() {
                           {orderStatus === 'READY' && 'Complete'}
                         </span>
                       </div>
-                    </div>
-                  )}
+                              </div>
+                            )}
 
                   {/* Special Animation for Preparing */}
                   {orderStatus === 'PREPARING' && (
@@ -1335,7 +1352,7 @@ export default function TableOrderPage() {
           </div>
           ) : (
             /* Menu Items View */
-            <div className="space-y-6">
+            <div className="space-y-6" data-menu-items>
               {/* Back Button and Search */}
               <div className="flex items-center justify-between">
                 <button
@@ -1379,8 +1396,8 @@ export default function TableOrderPage() {
                     className="block w-full pl-10 pr-3 py-2 border-0 rounded-xl bg-white/80 backdrop-blur-sm shadow-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm placeholder-slate-400"
                           />
                         </div>
-                </div>
-                
+                        </div>
+
               {/* Menu Items Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {filteredMenuItems.length === 0 ? (
@@ -1389,7 +1406,8 @@ export default function TableOrderPage() {
                     <h3 className="text-xl font-semibold text-slate-900 mb-2">No items found</h3>
                     <p className="text-slate-600">Try searching for something else or go back to categories.</p>
                   </div>
-                ) : (
+                ) : selectedCategory && selectedCategory !== 'all' ? (
+                  // Single category view
                   filteredMenuItems.map((item: MenuItem, index: number) => (
                     <div 
                       key={item.id}
@@ -1432,7 +1450,7 @@ export default function TableOrderPage() {
                                   {isMainCategory(item.category) && (
                                     <div className="flex items-center space-x-2">
                                       <label className="flex items-center space-x-1 cursor-pointer group">
-                                        <input
+                          <input
                                           type="checkbox"
                                           checked={mealSelections[item.id] || false}
                                           onChange={(e) => setMealSelections(prev => ({
@@ -1466,6 +1484,105 @@ export default function TableOrderPage() {
         </div>
       </div>
                   ))
+                ) : (
+                  // All Items view - grouped by categories
+                  categories.map((category, categoryIndex) => {
+                    const categoryItems = menu[category] || []
+                    if (categoryItems.length === 0) return null
+                    
+                    return (
+                      <div key={category} id={`category-${category}`} className="mb-8">
+                        {/* Category Header */}
+                        <div className="sticky top-[140px] z-30 bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-4 rounded-2xl mb-6 shadow-lg">
+                          <div className="flex items-center space-x-3">
+                            <div className="text-3xl">{getCategoryIcon(category)}</div>
+                        <div>
+                              <h2 className="text-2xl font-bold">{category}</h2>
+                              <p className="text-indigo-100">{categoryItems.length} items</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Category Items */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {categoryItems.map((item: MenuItem, itemIndex: number) => (
+                            <div 
+                              key={item.id}
+                              className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-white/40"
+                              style={{
+                                animation: `fadeInUp 0.6s ease-out ${(categoryIndex * 0.1) + (itemIndex * 0.05)}s both`
+                              }}
+                            >
+                              <div className="flex items-start space-x-4">
+                                {item.image && (
+                                  <div className="w-20 h-20 relative flex-shrink-0 overflow-hidden rounded-xl hover:scale-105 transition-transform duration-300">
+                                    <Image
+                                      src={item.image}
+                                      alt={item.name}
+                                      fill
+                                      className="object-cover"
+                                    />
+                                  </div>
+                                )}
+                                <div className="flex-1">
+                                  <div className="flex items-start justify-between">
+                                    <div className="flex-1 mr-4">
+                                      <div className="flex items-center space-x-2 mb-2">
+                                        <h3 className="text-lg font-bold text-slate-900">{item.name}</h3>
+                                      </div>
+                                      {item.description && (
+                                        <p className="text-slate-600 text-sm leading-relaxed mb-3">{item.description}</p>
+                                      )}
+                                      <div className="flex items-center justify-between">
+                                        <div className="flex items-center space-x-3">
+                                          <div className="text-xl font-bold text-indigo-600">
+                                            {restaurant?.currency || '€'}{item.price.toFixed(2)}
+                                          </div>
+                                          {isMainCategory(item.category) && (
+                                            <div className="flex items-center space-x-2">
+                                              <label className="flex items-center space-x-1 cursor-pointer group">
+                                                <input
+                                                  type="checkbox"
+                                                  checked={mealSelections[item.id] || false}
+                                                  onChange={(e) => setMealSelections(prev => ({
+                                                    ...prev,
+                                                    [item.id]: e.target.checked
+                                                  }))}
+                                                  className="w-4 h-4 text-orange-600 bg-gray-100 border-gray-300 rounded focus:ring-orange-500 focus:ring-2"
+                                                />
+                                                <span className="text-sm font-medium text-orange-600 group-hover:text-orange-700">
+                                                  🍟 Meal +{restaurant?.currency || '€'}4.50
+                                                </span>
+                                              </label>
+                                            </div>
+                                          )}
+                                        </div>
+                        <button
+                                          onClick={() => addToCart(item, mealSelections[item.id] || false)}
+                                          className={`px-6 py-2 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl ${
+                                            itemAnimations[item.id] 
+                                              ? 'bg-green-500 text-white' 
+                                              : 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700'
+                                          }`}
+                                        >
+                                          {itemAnimations[item.id] ? '✓ Added!' : 'Add to Cart'}
+                        </button>
+                      </div>
+                                      {mealSelections[item.id] && (
+                                        <div className="text-sm text-orange-600 font-medium mt-1">
+                                          Total: {restaurant?.currency || '€'}{(item.price + 4.50).toFixed(2)} (includes fries & drink)
+                    </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+                            </div>
+                          ))}
+      </div>
+                      </div>
+                    )
+                  })
                 )}
               </div>
             </div>
