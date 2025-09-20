@@ -106,10 +106,7 @@ export default function TableOrderPage() {
   // Calculate flat array of menu items with category information
   const menuItems = useMemo(() => {
     const items: MenuItem[] = []
-    console.log('Menu data:', menu)
-    console.log('Categories:', categories)
     Object.entries(menu).forEach(([category, categoryItems]) => {
-      console.log(`Processing category ${category}:`, categoryItems)
       categoryItems.forEach(item => {
         items.push({
           ...item,
@@ -117,13 +114,11 @@ export default function TableOrderPage() {
         })
       })
     })
-    console.log('Final menuItems:', items)
     return items
   }, [menu, categories])
 
   // Filter menu items based on search and category
   const filteredMenuItems = useMemo(() => {
-    console.log('Filtering - menuItems:', menuItems.length, 'searchQuery:', searchQuery, 'selectedCategory:', selectedCategory)
     let filtered = menuItems
     
     // Filter by search query
@@ -133,16 +128,13 @@ export default function TableOrderPage() {
         (item.description && item.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
         item.category.toLowerCase().includes(searchQuery.toLowerCase())
       )
-      console.log('After search filter:', filtered.length)
     }
     
     // Filter by selected category
     if (selectedCategory && selectedCategory !== 'all') {
       filtered = filtered.filter((item: MenuItem) => item.category === selectedCategory)
-      console.log('After category filter:', filtered.length)
     }
     
-    console.log('Final filtered items:', filtered)
     return filtered
   }, [menuItems, searchQuery, selectedCategory])
 
@@ -917,12 +909,24 @@ export default function TableOrderPage() {
                     type="text"
                     placeholder="Search for delicious food..."
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value)
+                      // When user starts typing, automatically switch to search results view
+                      if (e.target.value.trim()) {
+                        setSelectedCategory('all')
+                        setShowCategoryView(false)
+                      }
+                    }}
                     className="block w-full pl-12 pr-4 py-4 border-0 rounded-2xl bg-white/80 backdrop-blur-sm shadow-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-lg placeholder-slate-400"
                   />
                   {searchQuery && (
                                   <button
-                      onClick={() => setSearchQuery('')}
+                      onClick={() => {
+                        setSearchQuery('')
+                        // When search is cleared, return to category view
+                        setShowCategoryView(true)
+                        setSelectedCategory(null)
+                      }}
                       className="absolute inset-y-0 right-0 pr-4 flex items-center"
                                   >
                       <svg className="h-5 w-5 text-slate-400 hover:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1016,10 +1020,17 @@ export default function TableOrderPage() {
                 </button>
                 
                 <div className="flex items-center space-x-2">
-                  <div className="text-2xl">{selectedCategory === 'all' ? '🌟' : getCategoryIcon(selectedCategory || '')}</div>
+                  <div className="text-2xl">
+                    {searchQuery ? '🔍' : (selectedCategory === 'all' ? '🌟' : getCategoryIcon(selectedCategory || ''))}
+                  </div>
                   <h2 className="text-2xl font-bold text-slate-900">
-                    {selectedCategory === 'all' ? 'All Items' : selectedCategory}
+                    {searchQuery ? `Search: "${searchQuery}"` : (selectedCategory === 'all' ? 'All Items' : selectedCategory)}
                   </h2>
+                  {searchQuery && (
+                    <span className="text-sm text-slate-600 bg-slate-100 px-2 py-1 rounded-full">
+                      {filteredMenuItems.length} results
+                    </span>
+                  )}
                 </div>
               </div>
 
@@ -1072,7 +1083,15 @@ export default function TableOrderPage() {
                             <div className="flex-1">
                           <div className="flex items-start justify-between">
                             <div className="flex-1 mr-4">
-                              <h3 className="text-lg font-bold text-slate-900 mb-1">{item.name}</h3>
+                              <div className="flex items-center space-x-2 mb-2">
+                                <h3 className="text-lg font-bold text-slate-900">{item.name}</h3>
+                                {searchQuery && selectedCategory === 'all' && (
+                                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                                    <span className="mr-1">{getCategoryIcon(item.category)}</span>
+                                    {item.category}
+                                  </span>
+                                )}
+                              </div>
                               {item.description && (
                                 <p className="text-slate-600 text-sm leading-relaxed mb-3">{item.description}</p>
                               )}
