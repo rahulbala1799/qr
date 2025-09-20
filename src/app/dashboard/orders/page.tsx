@@ -39,14 +39,6 @@ export default function OrdersPage() {
   const [error, setError] = useState('')
   const [selectedStatus, setSelectedStatus] = useState('all')
 
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/auth/signin')
-    } else if (status === 'authenticated') {
-      fetchOrders()
-    }
-  }, [status, router, selectedStatus, fetchOrders])
-
   const fetchOrders = useCallback(async () => {
     try {
       const url = selectedStatus === 'all' 
@@ -66,6 +58,14 @@ export default function OrdersPage() {
       setIsLoading(false)
     }
   }, [session?.user?.id, selectedStatus])
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/auth/signin')
+    } else if (status === 'authenticated') {
+      fetchOrders()
+    }
+  }, [status, router, selectedStatus, fetchOrders])
 
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
     try {
