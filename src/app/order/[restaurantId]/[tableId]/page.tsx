@@ -17,6 +17,7 @@ interface CartItem {
   menuItem: MenuItem
   quantity: number
   notes: string
+  isMeal?: boolean  // Whether this item is ordered as a meal (+4.50)
 }
 
 interface Table {
@@ -40,6 +41,16 @@ export default function TableOrderPage() {
   const router = useRouter()
   const restaurantId = params.restaurantId as string
   const tableId = params.tableId as string
+
+  // Determine if a category qualifies for meal options
+  const isMainCategory = (category: string) => {
+    const lowerCategory = category.toLowerCase()
+    const mainCategories = [
+      'pizza', 'burger', 'chicken', 'main', 'entree', 'fried chicken', 
+      'grilled', 'pasta', 'steak', 'fish', 'seafood', 'sandwich', 'wrap'
+    ]
+    return mainCategories.some(mainCat => lowerCategory.includes(mainCat))
+  }
 
   // Category icon mapping
   const getCategoryIcon = (category: string) => {
@@ -138,6 +149,57 @@ export default function TableOrderPage() {
     
     return filtered
   }, [menuItems, searchQuery, selectedCategory])
+
+  // Add item to cart with optional meal upgrade
+  const addToCart = (item: MenuItem, isMeal: boolean = false) => {
+    const existingItemIndex = cart.findIndex(
+      cartItem => cartItem.menuItem.id === item.id && cartItem.isMeal === isMeal
+    )
+
+    if (existingItemIndex >= 0) {
+      // Item already in cart, increase quantity
+      const updatedCart = [...cart]
+      updatedCart[existingItemIndex].quantity += 1
+      setCart(updatedCart)
+    } else {
+      // Add new item to cart
+      const newCartItem: CartItem = {
+        menuItem: item,
+        quantity: 1,
+        notes: '',
+        isMeal: isMeal
+      }
+      setCart([...cart, newCartItem])
+    }
+
+    // Show animation
+    setItemAnimations(prev => ({
+      ...prev,
+      [item.id]: 'animate-pulse'
+    }))
+    setTimeout(() => {
+      setItemAnimations(prev => {
+        const newAnimations = { ...prev }
+        delete newAnimations[item.id]
+        return newAnimations
+      })
+    }, 600)
+
+    // Cart animation
+    setCartAnimation('animate-bounce')
+    setTimeout(() => setCartAnimation(''), 600)
+
+    // Save cart to localStorage
+    const updatedCart = existingItemIndex >= 0 
+      ? (() => {
+          const updated = [...cart]
+          updated[existingItemIndex].quantity += 1
+          return updated
+        })()
+      : [...cart, { menuItem: item, quantity: 1, notes: '', isMeal: isMeal }]
+    
+    localStorage.setItem(`cart_${restaurantId}_${tableId}`, JSON.stringify(updatedCart))
+  }
 
   // Cleanup search timeout on unmount
   useEffect(() => {
@@ -358,78 +420,6 @@ export default function TableOrderPage() {
   }, [categories])
 
   // Prevent body scroll when cart is open on mobile
-
-  const addToCart = (menuItem: MenuItem) => {
-    // Add item animation
-    setItemAnimations(prev => ({
-      ...prev,
-      [menuItem.id]: 'animate-bounce'
-    }))
-
-    // Clear animation after delay
-    setTimeout(() => {
-      setItemAnimations(prev => ({
-        ...prev,
-        [menuItem.id]: ''
-      }))
-    }, 600)
-
-    // Cart shake animation
-    setCartAnimation('animate-pulse')
-    setTimeout(() => setCartAnimation(''), 300)
-
-    setCart(prev => {
-      const existingItem = prev.find(item => item.menuItem.id === menuItem.id)
-      if (existingItem) {
-        return prev.map(item =>
-          item.menuItem.id === menuItem.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        )
-      } else {
-        return [...prev, { menuItem, quantity: 1, notes: '' }]
-      }
-    })
-
-    // Show success toast
-    const toast = document.createElement('div')
-    toast.className = 'fixed top-20 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 animate-slide-in-right'
-    toast.textContent = `${menuItem.name} added to cart!`
-    document.body.appendChild(toast)
-    
-    setTimeout(() => {
-      toast.classList.add('animate-slide-out-right')
-      setTimeout(() => document.body.removeChild(toast), 300)
-    }, 2000)
-  }
-
-  const removeFromCart = (menuItemId: string) => {
-    setCart(prev => prev.filter(item => item.menuItem.id !== menuItemId))
-  }
-
-  const updateQuantity = (menuItemId: string, quantity: number) => {
-    if (quantity <= 0) {
-      removeFromCart(menuItemId)
-      return
-    }
-    setCart(prev =>
-      prev.map(item =>
-        item.menuItem.id === menuItemId
-          ? { ...item, quantity }
-          : item
-      )
-    )
-  }
-
-  const updateNotes = (menuItemId: string, notes: string) => {
-    setCart(prev =>
-      prev.map(item =>
-        item.menuItem.id === menuItemId
-          ? { ...item, notes }
-          : item
-      )
-    )
-  }
 
   const getTotalAmount = () => {
     return cart.reduce((total, item) => total + (item.menuItem.price * item.quantity), 0)
@@ -1063,7 +1053,10 @@ export default function TableOrderPage() {
                     <div className="text-sm text-slate-600">In Cart</div>
                   </div>
                   <div>
-                    <div className="text-2xl font-bold text-indigo-600">{restaurant?.currency || '€'}{cart.reduce((sum, item) => sum + (item.menuItem.price * item.quantity), 0).toFixed(2)}</div>
+                    <div className="text-2xl font-bold text-indigo-600">{restaurant?.currency || '€'}{cart.reduce((sum, item) => {
+                      const itemPrice = item.menuItem.price + (item.isMeal ? 4.50 : 0)
+                      return sum + (itemPrice * item.quantity)
+                    }, 0).toFixed(2)}</div>
                     <div className="text-sm text-slate-600">Cart Total</div>
                   </div>
                 </div>
@@ -1164,12 +1157,33 @@ export default function TableOrderPage() {
                                 {restaurant?.currency || '€'}{item.price.toFixed(2)}
                               </div>
                             </div>
-                            <button
-                              onClick={() => addToCart(item)}
-                              className={`bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-2 rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl hover:scale-105 ${itemAnimations[item.id] || ''}`}
-                            >
-                              Add to Cart
-                            </button>
+                            <div className="flex flex-col space-y-2">
+                              {isMainCategory(item.category) ? (
+                                /* Meal Options for Main Dishes */
+                                <div className="space-y-2">
+                                  <button
+                                    onClick={() => addToCart(item, false)}
+                                    className={`w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-2 rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl hover:scale-105 ${itemAnimations[item.id] || ''}`}
+                                  >
+                                    Add to Cart
+                                  </button>
+                                  <button
+                                    onClick={() => addToCart(item, true)}
+                                    className={`w-full bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 rounded-xl hover:from-orange-600 hover:to-red-600 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl hover:scale-105 text-sm ${itemAnimations[item.id] || ''}`}
+                                  >
+                                    🍟 Make it a MEAL +{restaurant?.currency || '€'}4.50
+                                  </button>
+                                </div>
+                              ) : (
+                                /* Regular Add to Cart for Non-Main Items */
+                                <button
+                                  onClick={() => addToCart(item, false)}
+                                  className={`bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-2 rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl hover:scale-105 ${itemAnimations[item.id] || ''}`}
+                                >
+                                  Add to Cart
+                                </button>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>

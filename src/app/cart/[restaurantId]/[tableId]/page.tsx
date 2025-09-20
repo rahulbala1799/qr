@@ -20,6 +20,7 @@ interface CartItem {
   quantity: number
   notes: string
   customizations?: string[]
+  isMeal?: boolean  // Whether this item is ordered as a meal (+4.50)
 }
 
 interface Restaurant {
@@ -140,12 +141,18 @@ export default function CartPage() {
   }
 
   const getTotalAmount = () => {
-    const subtotal = cart.reduce((total, item) => total + (item.menuItem.price * item.quantity), 0)
+    const subtotal = cart.reduce((total, item) => {
+      const itemPrice = item.menuItem.price + (item.isMeal ? 4.50 : 0)
+      return total + (itemPrice * item.quantity)
+    }, 0)
     return subtotal - discount
   }
 
   const getSubtotal = () => {
-    return cart.reduce((total, item) => total + (item.menuItem.price * item.quantity), 0)
+    return cart.reduce((total, item) => {
+      const itemPrice = item.menuItem.price + (item.isMeal ? 4.50 : 0)
+      return total + (itemPrice * item.quantity)
+    }, 0)
   }
 
   const getTotalItems = () => {
@@ -187,7 +194,9 @@ export default function CartPage() {
           items: cart.map(item => ({
             menuItemId: item.menuItem.id,
             quantity: item.quantity,
-            notes: item.notes
+            notes: item.notes,
+            isMeal: item.isMeal || false,
+            price: item.menuItem.price + (item.isMeal ? 4.50 : 0)
           }))
         }
 
@@ -207,7 +216,8 @@ export default function CartPage() {
             menuItemId: item.menuItem.id,
             quantity: item.quantity,
             notes: item.notes,
-            price: item.menuItem.price
+            isMeal: item.isMeal || false,
+            price: item.menuItem.price + (item.isMeal ? 4.50 : 0)
           })),
           customerName: customerName || 'Guest',
           customerPhone,
@@ -365,17 +375,37 @@ export default function CartPage() {
                           {/* Item Info */}
                           <div className="flex justify-between items-start mb-3">
                             <div>
-                              <h3 className="text-lg font-semibold text-gray-900 group-hover:text-primary-600 transition-colors">
-                                {item.menuItem.name}
-                              </h3>
+                              <div className="flex items-center space-x-2 mb-1">
+                                <h3 className="text-lg font-semibold text-gray-900 group-hover:text-primary-600 transition-colors">
+                                  {item.menuItem.name}
+                                </h3>
+                                {item.isMeal && (
+                                  <span className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-2 py-1 rounded-full text-xs font-bold flex items-center space-x-1">
+                                    <span>🍟</span>
+                                    <span>MEAL</span>
+                                  </span>
+                                )}
+                              </div>
                               {item.menuItem.description && (
                                 <p className="text-gray-600 text-sm mt-1 line-clamp-2">
                                   {item.menuItem.description}
                                 </p>
                               )}
-                              <p className="text-primary-600 font-semibold mt-2">
-                                {restaurant?.currency || '€'}{item.menuItem.price.toFixed(2)} each
-                              </p>
+                              {item.isMeal && (
+                                <div className="mt-2 space-y-1">
+                                  <p className="text-gray-500 text-sm line-through">
+                                    {restaurant?.currency || '€'}{item.menuItem.price.toFixed(2)} each
+                                  </p>
+                                  <p className="text-orange-600 font-semibold">
+                                    {restaurant?.currency || '€'}{(item.menuItem.price + 4.50).toFixed(2)} each (Meal +{restaurant?.currency || '€'}4.50)
+                                  </p>
+                                </div>
+                              )}
+                              {!item.isMeal && (
+                                <p className="text-primary-600 font-semibold mt-2">
+                                  {restaurant?.currency || '€'}{item.menuItem.price.toFixed(2)} each
+                                </p>
+                              )}
                             </div>
                             
                             {/* Remove Button */}
@@ -414,7 +444,7 @@ export default function CartPage() {
                             <div className="text-right">
                               <p className="text-sm text-gray-500 mb-1">Subtotal</p>
                               <p className="text-xl font-bold text-gray-900">
-                                {restaurant?.currency || '€'}{(item.menuItem.price * item.quantity).toFixed(2)}
+                                {restaurant?.currency || '€'}{((item.menuItem.price + (item.isMeal ? 4.50 : 0)) * item.quantity).toFixed(2)}
                               </p>
                             </div>
                           </div>
