@@ -601,10 +601,10 @@ export default function TableOrderPage() {
                   <div className="flex items-center space-x-1">
                     <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
                     <span>Table {table.tableNumber}</span>
-                  </div>
+              </div>
                   <span>•</span>
                   <span>Order Online</span>
-                </div>
+            </div>
               </div>
             </div>
             
@@ -632,7 +632,7 @@ export default function TableOrderPage() {
                 <div className="flex items-center space-x-2 bg-gradient-to-r from-emerald-50 to-green-50 px-4 py-2 rounded-2xl border border-emerald-200">
                   <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
                   <span className="text-sm font-semibold text-emerald-700">TRACKING ORDER</span>
-                </div>
+          </div>
                 <button
                   onClick={() => {
                     // Keep the existing order context but allow adding more items
@@ -698,8 +698,277 @@ export default function TableOrderPage() {
         </div>
       )}
 
-      {/* Live Order Tracking */}
+      {/* Modern Live Order Tracking */}
       {placedOrder && isTrackingOrder && (
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 px-8 py-6 text-white">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="flex items-center space-x-3 mb-2">
+                    <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+              </div>
+                    <div>
+                      <h2 className="text-2xl font-bold">Order Confirmed!</h2>
+                      <p className="text-emerald-100">Order #{placedOrder.orderNumber} • Table {table?.tableNumber}</p>
+                    </div>
+                              </div>
+                </div>
+                <div className="text-right">
+                  <div className="flex items-center space-x-2 bg-white/20 px-4 py-2 rounded-2xl backdrop-blur-sm">
+                    <div className="w-3 h-3 bg-white rounded-full animate-pulse"></div>
+                    <span className="font-semibold">LIVE TRACKING</span>
+                  </div>
+                  <p className="text-emerald-100 text-sm mt-2">Updates every 3 seconds</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-8">
+              {/* Modern Status Timeline */}
+              <div className="mb-8">
+                <h3 className="text-xl font-bold text-slate-900 mb-6">Order Progress</h3>
+                <div className="relative">
+                  {/* Progress Line */}
+                  <div className="absolute top-8 left-8 right-8 h-1 bg-slate-200 rounded-full">
+                    <div 
+                      className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-1000 ease-out"
+                      style={{ 
+                        width: `${((['PENDING', 'CONFIRMED', 'PREPARING', 'READY', 'DELIVERED'].indexOf(orderStatus) + 1) / 5) * 100}%` 
+                      }}
+                    ></div>
+                  </div>
+                  
+                  {/* Status Steps */}
+                  <div className="relative flex justify-between">
+                    {[
+                      { key: 'PENDING', label: 'Order Received', icon: '📝', description: 'We got your order!' },
+                      { key: 'CONFIRMED', label: 'Confirmed', icon: '✅', description: 'Order confirmed' },
+                      { key: 'PREPARING', label: 'Cooking', icon: '👨‍🍳', description: 'Being prepared' },
+                      { key: 'READY', label: 'Ready', icon: '🍽️', description: 'Ready for pickup' },
+                      { key: 'DELIVERED', label: 'Complete', icon: '🎉', description: 'Enjoy your meal!' }
+                    ].map((status, index) => {
+                      const isActive = status.key === orderStatus
+                      const isCompleted = ['PENDING', 'CONFIRMED', 'PREPARING', 'READY', 'DELIVERED'].indexOf(orderStatus) >= index
+                      
+                      return (
+                        <div key={status.key} className="flex flex-col items-center relative z-10">
+                          <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl mb-3 transition-all duration-500 shadow-lg ${
+                            isActive 
+                              ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white animate-pulse scale-110 shadow-emerald-200' 
+                              : isCompleted 
+                                ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-emerald-200' 
+                                : 'bg-slate-100 text-slate-400 shadow-slate-100'
+                          }`}>
+                            {status.icon}
+                          </div>
+                          <div className="text-center">
+                            <p className={`font-semibold text-sm mb-1 ${
+                              isActive ? 'text-emerald-600' : isCompleted ? 'text-emerald-600' : 'text-slate-400'
+                            }`}>
+                              {status.label}
+                            </p>
+                            <p className={`text-xs ${
+                              isActive ? 'text-emerald-500' : isCompleted ? 'text-slate-600' : 'text-slate-400'
+                            }`}>
+                              {status.description}
+                            </p>
+                          </div>
+                          {isActive && (
+                            <div className="absolute -bottom-2 w-2 h-2 bg-emerald-500 rounded-full animate-bounce"></div>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              {/* Current Status Card */}
+              <div className="bg-gradient-to-r from-slate-50 to-slate-100 rounded-2xl p-6 mb-8 border border-slate-200">
+                <div className="flex items-start space-x-4">
+                  <div className="w-14 h-14 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center text-white text-xl shadow-lg">
+                    {orderStatus === 'PENDING' && '📝'}
+                    {orderStatus === 'CONFIRMED' && '✅'}
+                    {orderStatus === 'PREPARING' && '👨‍🍳'}
+                    {orderStatus === 'READY' && '🍽️'}
+                    {orderStatus === 'DELIVERED' && '🎉'}
+                  </div>
+                            <div className="flex-1">
+                    <h4 className="text-xl font-bold text-slate-900 mb-2">
+                      {orderStatus === 'PENDING' && 'Order Received'}
+                      {orderStatus === 'CONFIRMED' && 'Order Confirmed'}
+                      {orderStatus === 'PREPARING' && 'Cooking in Progress'}
+                      {orderStatus === 'READY' && 'Ready for Pickup!'}
+                      {orderStatus === 'DELIVERED' && 'Order Complete'}
+                    </h4>
+                    <p className="text-slate-600 leading-relaxed">
+                      {orderStatus === 'PENDING' && 'Your order has been received and is being reviewed by our kitchen team. You\'ll be notified once it\'s confirmed!'}
+                      {orderStatus === 'CONFIRMED' && 'Great! Your order has been confirmed and our chefs are getting ready to prepare your delicious meal.'}
+                      {orderStatus === 'PREPARING' && 'Our talented chefs are now preparing your order with fresh ingredients and lots of care. It won\'t be long now!'}
+                      {orderStatus === 'READY' && 'Fantastic! Your order is ready and waiting for you. Please come to the counter to collect your meal.'}
+                      {orderStatus === 'DELIVERED' && 'Thank you for choosing us! We hope you enjoyed your meal. Don\'t forget to leave a review!'}
+                    </p>
+                    {orderStatus === 'PREPARING' && (
+                      <div className="mt-3 flex items-center space-x-2">
+                        <div className="flex space-x-1">
+                          <div className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce"></div>
+                          <div className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                          <div className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                        </div>
+                        <span className="text-sm text-emerald-600 font-medium">Cooking in progress...</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Order Summary */}
+                <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200">
+                  <h4 className="text-lg font-bold text-slate-900 mb-4 flex items-center space-x-2">
+                    <svg className="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                    <span>Order Details</span>
+                  </h4>
+                  <div className="space-y-3">
+                    {placedOrder.orderItems?.map((item: any, index: number) => (
+                      <div key={index} className="flex items-center justify-between p-3 bg-white rounded-xl border border-slate-100">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-10 h-10 bg-gradient-to-r from-slate-100 to-slate-200 rounded-xl flex items-center justify-center">
+                            <span className="text-lg">🍽️</span>
+                          </div>
+                                <div>
+                            <p className="font-semibold text-slate-900">{item.menuItem?.name || 'Item'}</p>
+                            <p className="text-sm text-slate-600">Quantity: {item.quantity}</p>
+                            {item.notes && (
+                              <p className="text-xs text-slate-500 mt-1">Note: {item.notes}</p>
+                            )}
+                          </div>
+                                </div>
+                                <div className="text-right">
+                          <p className="font-bold text-slate-900">
+                            {restaurant?.currency || '€'}{((item.menuItem?.price || 0) * item.quantity).toFixed(2)}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                    <div className="border-t border-slate-200 pt-3 mt-4">
+                      <div className="flex justify-between items-center p-3 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl border border-emerald-200">
+                        <span className="font-bold text-slate-900">Total Amount</span>
+                        <span className="text-xl font-bold text-emerald-600">
+                          {restaurant?.currency || '€'}{Number(placedOrder.totalAmount || 0).toFixed(2)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Customer Info & Actions */}
+                <div className="space-y-6">
+                  {/* Customer Information */}
+                  {placedOrder.customerName && (
+                    <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200">
+                      <h4 className="text-lg font-bold text-slate-900 mb-4 flex items-center space-x-2">
+                        <svg className="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        <span>Customer Information</span>
+                      </h4>
+                      <div className="space-y-3">
+                        <div className="flex items-center space-x-3 p-3 bg-white rounded-xl border border-slate-100">
+                          <div className="w-8 h-8 bg-blue-100 rounded-xl flex items-center justify-center">
+                            <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                          </div>
+                          <div>
+                            <p className="text-sm text-slate-500">Name</p>
+                            <p className="font-semibold text-slate-900">{placedOrder.customerName}</p>
+                          </div>
+                        </div>
+                        {placedOrder.customerPhone && (
+                          <div className="flex items-center space-x-3 p-3 bg-white rounded-xl border border-slate-100">
+                            <div className="w-8 h-8 bg-green-100 rounded-xl flex items-center justify-center">
+                              <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                              </svg>
+                            </div>
+                            <div>
+                              <p className="text-sm text-slate-500">Phone</p>
+                              <p className="font-semibold text-slate-900">{placedOrder.customerPhone}</p>
+                            </div>
+                          </div>
+                        )}
+                        {placedOrder.notes && (
+                          <div className="p-3 bg-amber-50 rounded-xl border border-amber-200">
+                            <p className="text-sm text-amber-700 font-medium mb-1">Special Requests</p>
+                            <p className="text-amber-800">{placedOrder.notes}</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Action Buttons */}
+                  <div className="space-y-3">
+                                  <button
+                      onClick={() => {
+                        // Keep the existing order context but allow adding more items
+                        setIsTrackingOrder(false)
+                        
+                        // Restore order data to localStorage so cart page can detect it
+                        if (placedOrder) {
+                          localStorage.setItem(`placed_order_${restaurantId}_${tableId}`, JSON.stringify({
+                            order: placedOrder,
+                            timestamp: Date.now()
+                          }))
+                        }
+                      }}
+                      className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-4 rounded-2xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 font-bold shadow-lg hover:shadow-xl hover:scale-105 flex items-center justify-center space-x-2"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                      </svg>
+                      <span>Add More Items</span>
+                    </button>
+                    
+                    <button
+                      onClick={() => {
+                        if (navigator.share) {
+                          navigator.share({
+                            title: `Order #${placedOrder.orderNumber}`,
+                            text: `Tracking my order at ${restaurant?.name}`,
+                            url: window.location.href
+                          })
+                        } else {
+                          navigator.clipboard.writeText(window.location.href)
+                          setSuccess('Order tracking link copied to clipboard!')
+                          setTimeout(() => setSuccess(''), 3000)
+                        }
+                      }}
+                      className="w-full bg-white border-2 border-slate-200 text-slate-700 px-6 py-4 rounded-2xl hover:bg-slate-50 hover:border-slate-300 transition-all duration-300 font-semibold shadow-sm hover:shadow-md flex items-center justify-center space-x-2"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+                      </svg>
+                      <span>Share Order</span>
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+      )}
+
+      {/* OLD Live Order Tracking - DISABLED */}
+      {false && placedOrder && isTrackingOrder && (
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6 shadow-lg">
             <div className="flex items-center justify-between mb-6">
@@ -710,12 +979,12 @@ export default function TableOrderPage() {
                 <p className="text-gray-600">
                   Order #{placedOrder.orderNumber} • Table {table?.tableNumber}
                 </p>
-              </div>
+                  </div>
               <div className="flex items-center space-x-2">
                 <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
                 <span className="text-sm font-medium text-green-700">LIVE TRACKING</span>
               </div>
-            </div>
+          </div>
 
             {/* Order Status Timeline */}
             <div className="mb-6">
@@ -752,8 +1021,8 @@ export default function TableOrderPage() {
                   )
                 })}
               </div>
-            </div>
-
+                </div>
+                
             {/* Current Status Message */}
             <div className="bg-white rounded-lg p-4 mb-4">
               <div className="flex items-center space-x-3">
@@ -763,7 +1032,7 @@ export default function TableOrderPage() {
                   {orderStatus === 'PREPARING' && '👨‍🍳'}
                   {orderStatus === 'READY' && '🍽️'}
                   {orderStatus === 'COMPLETED' && '🎉'}
-                </div>
+                            </div>
                 <div>
                   <p className="font-semibold text-gray-900">
                     {orderStatus === 'PENDING' && 'Order Received'}
@@ -835,7 +1104,7 @@ export default function TableOrderPage() {
 
             {/* Action Buttons */}
             <div className="mt-6 flex flex-col sm:flex-row gap-3">
-              <button
+                            <button
                 onClick={() => {
                   // Keep existing order context but show menu for adding items
                   setIsTrackingOrder(false)
@@ -854,18 +1123,18 @@ export default function TableOrderPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
                 <span>Add More Items</span>
-              </button>
+                            </button>
               
               {orderStatus === 'COMPLETED' && (
-                <button
+                            <button
                   onClick={() => window.location.reload()}
                   className="flex-1 bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition-colors font-medium flex items-center justify-center space-x-2"
-                >
+                            >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                   </svg>
                   <span>Start New Order</span>
-                </button>
+                            </button>
               )}
             </div>
           </div>
@@ -943,7 +1212,7 @@ export default function TableOrderPage() {
                     className="block w-full pl-12 pr-4 py-4 border-0 rounded-2xl bg-white/80 backdrop-blur-sm shadow-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-lg placeholder-slate-400"
                   />
                   {searchQuery && (
-                                  <button
+                            <button
                       onClick={() => {
                         setSearchQuery('')
                         // When search is cleared, return to category view
@@ -955,9 +1224,9 @@ export default function TableOrderPage() {
                       <svg className="h-5 w-5 text-slate-400 hover:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                       </svg>
-                                  </button>
+                            </button>
                   )}
-                                </div>
+                          </div>
                               </div>
 
               {/* Category Tiles */}
@@ -1001,9 +1270,9 @@ export default function TableOrderPage() {
                       </p>
                       <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-purple-600/10 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                        </div>
+                      ))}
+                    </div>
 
               {/* Search Results Preview - Show while typing */}
               {searchQuery && searchQuery.trim().length >= 1 && showCategoryView && (
@@ -1016,8 +1285,8 @@ export default function TableOrderPage() {
                     <span className="text-sm text-slate-600 bg-slate-100 px-2 py-1 rounded-full">
                       {filteredMenuItems.length} found
                     </span>
-                  </div>
-                  
+                      </div>
+
                   {filteredMenuItems.length === 0 ? (
                     <p className="text-slate-600 text-center py-4">No items found. Try a different search term.</p>
                   ) : (
@@ -1049,7 +1318,7 @@ export default function TableOrderPage() {
               {/* Quick Stats */}
               <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/40">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                  <div>
+                        <div>
                     <div className="text-2xl font-bold text-slate-900">{categories.length}</div>
                     <div className="text-sm text-slate-600">Categories</div>
                   </div>
@@ -1109,14 +1378,14 @@ export default function TableOrderPage() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                   </div>
-                  <input
-                    type="text"
+                          <input
+                            type="text"
                     placeholder="Search items..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="block w-full pl-10 pr-3 py-2 border-0 rounded-xl bg-white/80 backdrop-blur-sm shadow-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm placeholder-slate-400"
-                  />
-                </div>
+                          />
+                        </div>
                 </div>
                 
               {/* Menu Items Grid */}
@@ -1144,8 +1413,8 @@ export default function TableOrderPage() {
                               alt={item.name}
                               fill
                               className="object-cover"
-                            />
-                          </div>
+                          />
+                        </div>
                         )}
                             <div className="flex-1">
                           <div className="flex items-start justify-between">
@@ -1183,26 +1452,26 @@ export default function TableOrderPage() {
                                           🍟 Meal +{restaurant?.currency || '€'}4.50
                                         </span>
                                       </label>
-                                    </div>
+                        </div>
                                   )}
                                 </div>
-                                <button
+                        <button
                                   onClick={() => addToCart(item, mealSelections[item.id] || false)}
                                   className={`bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-2 rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl hover:scale-105 ${itemAnimations[item.id] || ''}`}
-                                >
+                        >
                                   Add to Cart
-                                </button>
-                              </div>
+                        </button>
+                      </div>
                               {isMainCategory(item.category) && mealSelections[item.id] && (
                                 <div className="text-sm text-orange-600 font-medium mt-1">
                                   Total: {restaurant?.currency || '€'}{(item.price + 4.50).toFixed(2)} (includes fries & drink)
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
                     </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
                   ))
                 )}
               </div>
