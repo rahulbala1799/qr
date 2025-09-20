@@ -474,181 +474,157 @@ export default function TableOrderPage() {
               ></div>
             )}
             
-            <div className={`bg-white rounded-lg shadow-sm ${showCart ? 'block' : 'hidden lg:block'} ${showCart ? 'fixed inset-0 z-50 flex flex-col lg:relative lg:shadow-sm lg:max-w-none lg:w-auto lg:h-auto animate-slide-in-right' : ''}`}>
-              {/* Desktop and Mobile Cart Header */}
-              <div className={`${showCart ? 'flex-shrink-0 border-b border-gray-200' : ''} p-6 ${showCart ? 'pb-4' : ''}`}>
-                <div className="flex justify-between items-center mb-4">
-                  <div>
-                    <h2 className="text-2xl font-bold text-gray-900 flex items-center space-x-2">
-                      <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
+            {/* CLEAN SIMPLE CART - NO MORE BULLSHIT */}
+            <div className={`bg-white rounded-lg shadow-sm ${showCart ? 'block' : 'hidden lg:block'} ${showCart ? 'fixed inset-4 z-50 animate-slide-in-right' : ''}`}>
+              
+              {/* Cart Header */}
+              <div className="p-6 border-b border-gray-200">
+                <div className="flex justify-between items-center">
+                  <h2 className="text-xl font-bold text-gray-900">Your Order</h2>
+                  {showCart && (
+                    <button
+                      onClick={() => setShowCart(false)}
+                      className="lg:hidden p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+                    >
+                      <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                       </svg>
-                      <span>Your Order</span>
-                    </h2>
-                    <p className="text-sm text-gray-500 mt-1">Review your items below</p>
-                  </div>
-                  <button
-                    onClick={() => setShowCart(false)}
-                    className="lg:hidden p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-200"
-                  >
-                    <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
+                    </button>
+                  )}
                 </div>
                 
-                {/* Enhanced Table Info */}
-                <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                      <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                      </svg>
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-blue-900">Table {table.tableNumber}</h3>
-                      <p className="text-sm text-blue-700">Your order will be delivered here</p>
-                    </div>
+                {/* Table Info */}
+                <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="flex items-center space-x-2">
+                    <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                    <span className="font-medium text-blue-900">Table {table.tableNumber}</span>
                   </div>
                 </div>
               </div>
 
-              {/* Cart Content - Scrollable */}
-              <div className={`${showCart ? 'flex-1 overflow-y-auto' : ''}`}>
-                <div className="p-6 pt-4">
-                  {cart.length === 0 ? (
-                    <div className="text-center py-12">
-                      <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
-                        </svg>
-                      </div>
-                      <h3 className="text-lg font-medium text-gray-900 mb-2">Your cart is empty</h3>
-                      <p className="text-gray-500">Add some delicious items from our menu!</p>
+              {/* Cart Items - PROPER SPACE */}
+              <div className={`${showCart ? 'max-h-96' : 'max-h-80'} overflow-y-auto p-6`}>
+                {cart.length === 0 ? (
+                  <div className="text-center py-8">
+                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
+                      </svg>
                     </div>
-                  ) : (
-                    <div className="space-y-4 mb-6">
-                      {cart.map((item, index) => (
-                        <div 
-                          key={item.menuItem.id} 
-                          className="bg-gradient-to-r from-gray-50 to-white p-4 rounded-xl border border-gray-100 hover:shadow-md transition-all duration-300"
-                          style={{
-                            animation: `fadeInUp 0.4s ease-out ${index * 0.1}s both`
-                          }}
-                        >
-                          <div className="flex justify-between items-start mb-3">
-                            <div className="flex-1">
-                              <h3 className="font-semibold text-gray-900 text-lg">{item.menuItem.name}</h3>
-                              <p className="text-primary-600 font-medium">{restaurant?.currency || '€'}{item.menuItem.price.toFixed(2)} each</p>
-                            </div>
+                    <h3 className="font-medium text-gray-900 mb-1">Your cart is empty</h3>
+                    <p className="text-gray-500 text-sm">Add items from the menu</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {cart.map((item) => (
+                      <div key={item.menuItem.id} className="bg-gray-50 p-4 rounded-lg">
+                        <div className="flex justify-between items-start mb-3">
+                          <div className="flex-1">
+                            <h3 className="font-medium text-gray-900">{item.menuItem.name}</h3>
+                            <p className="text-primary-600 font-medium text-sm">{restaurant?.currency || '€'}{item.menuItem.price.toFixed(2)} each</p>
+                          </div>
+                          <button
+                            onClick={() => removeFromCart(item.menuItem.id)}
+                            className="text-red-500 hover:text-red-700 p-1"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
+                        </div>
+                        
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center space-x-2">
                             <button
-                              onClick={() => removeFromCart(item.menuItem.id)}
-                              className="p-1 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:text-red-700 transition-colors duration-200"
+                              onClick={() => updateQuantity(item.menuItem.id, item.quantity - 1)}
+                              className="w-7 h-7 rounded bg-primary-100 text-primary-600 flex items-center justify-center hover:bg-primary-200"
                             >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                              </svg>
+                            </button>
+                            <span className="w-8 text-center font-medium">{item.quantity}</span>
+                            <button
+                              onClick={() => updateQuantity(item.menuItem.id, item.quantity + 1)}
+                              className="w-7 h-7 rounded bg-primary-100 text-primary-600 flex items-center justify-center hover:bg-primary-200"
+                            >
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                               </svg>
                             </button>
                           </div>
-                          
-                          {/* Quantity Controls */}
-                          <div className="flex items-center justify-between mb-3">
-                            <div className="flex items-center space-x-3 bg-white rounded-full p-1 shadow-sm border">
-                              <button
-                                onClick={() => updateQuantity(item.menuItem.id, item.quantity - 1)}
-                                className="w-8 h-8 rounded-full bg-primary-100 text-primary-600 flex items-center justify-center hover:bg-primary-200 transition-colors duration-200"
-                              >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-                                </svg>
-                              </button>
-                              <span className="w-8 text-center font-semibold text-gray-900">{item.quantity}</span>
-                              <button
-                                onClick={() => updateQuantity(item.menuItem.id, item.quantity + 1)}
-                                className="w-8 h-8 rounded-full bg-primary-100 text-primary-600 flex items-center justify-center hover:bg-primary-200 transition-colors duration-200"
-                              >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                </svg>
-                              </button>
-                            </div>
-                            <div className="text-right">
-                              <p className="text-sm text-gray-500">Subtotal</p>
-                              <p className="font-bold text-lg text-gray-900">{restaurant?.currency || '€'}{(item.menuItem.price * item.quantity).toFixed(2)}</p>
-                            </div>
+                          <div className="text-right">
+                            <p className="font-bold text-gray-900">{restaurant?.currency || '€'}{(item.menuItem.price * item.quantity).toFixed(2)}</p>
                           </div>
-                          
-                          {/* Notes */}
-                          <textarea
-                            value={item.notes}
-                            onChange={(e) => updateNotes(item.menuItem.id, e.target.value)}
-                            placeholder="Any special instructions for this item?"
-                            className="w-full p-3 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-200"
-                            rows={2}
-                          />
                         </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                        
+                        <textarea
+                          value={item.notes}
+                          onChange={(e) => updateNotes(item.menuItem.id, e.target.value)}
+                          placeholder="Special instructions..."
+                          className="w-full p-2 border border-gray-200 rounded text-sm"
+                          rows={2}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
-              {/* Fixed Order Form Footer - Only show when cart has items */}
-              {cart.length > 0 && showCart && (
+              {/* Order Footer */}
+              {cart.length > 0 && (
                 <div className="flex-shrink-0 border-t border-gray-200 bg-white p-6">
                   <div className="flex justify-between text-lg font-semibold mb-4">
                     <span>Total:</span>
                     <span>{restaurant?.currency || '€'}{getTotalAmount().toFixed(2)}</span>
                   </div>
 
-                  {/* Customer Info Form */}
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Your Name (Optional)
-                      </label>
-                      <input
-                        type="text"
-                        value={customerName}
-                        onChange={(e) => setCustomerName(e.target.value)}
-                        className="w-full p-2 border border-gray-300 rounded-md"
-                        placeholder="Enter your name"
-                      />
-                    </div>
+                  <div className="space-y-3">
+                    <input
+                      type="text"
+                      value={customerName}
+                      onChange={(e) => setCustomerName(e.target.value)}
+                      className="w-full p-3 border border-gray-300 rounded-lg"
+                      placeholder="Your name (optional)"
+                    />
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Phone Number (Optional)
-                      </label>
-                      <input
-                        type="tel"
-                        value={customerPhone}
-                        onChange={(e) => setCustomerPhone(e.target.value)}
-                        className="w-full p-2 border border-gray-300 rounded-md"
-                        placeholder="Enter your phone number"
-                      />
-                    </div>
+                    <input
+                      type="tel"
+                      value={customerPhone}
+                      onChange={(e) => setCustomerPhone(e.target.value)}
+                      className="w-full p-3 border border-gray-300 rounded-lg"
+                      placeholder="Phone number (optional)"
+                    />
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Order Notes (Optional)
-                      </label>
-                      <textarea
-                        value={notes}
-                        onChange={(e) => setNotes(e.target.value)}
-                        className="w-full p-2 border border-gray-300 rounded-md"
-                        rows={3}
-                        placeholder="Any special requests or notes for your order..."
-                      />
-                    </div>
+                    <textarea
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                      className="w-full p-3 border border-gray-300 rounded-lg"
+                      rows={2}
+                      placeholder="Special instructions (optional)"
+                    />
 
                     <button
                       onClick={placeOrder}
                       disabled={isOrdering}
-                      className="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      className="w-full bg-primary-600 text-white py-3 rounded-lg hover:bg-primary-700 disabled:opacity-50 font-medium"
                     >
-                      {isOrdering ? 'Placing Order...' : 'Place Order for Table ' + table.tableNumber}
+                      {isOrdering ? 'Placing Order...' : `Place Order - ${restaurant?.currency || '€'}${getTotalAmount().toFixed(2)}`}
                     </button>
+
+                    {error && (
+                      <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                        <p className="text-red-600 text-sm">{error}</p>
+                      </div>
+                    )}
+
+                    {success && (
+                      <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                        <p className="text-green-600 text-sm">{success}</p>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
