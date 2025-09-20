@@ -116,7 +116,7 @@ export default function TableOrderPage() {
       })
     })
     return items
-  }, [menu, categories])
+  }, [menu])
 
   // Filter menu items based on search and category
   const filteredMenuItems = useMemo(() => {
@@ -1012,7 +1012,7 @@ export default function TableOrderPage() {
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-lg font-semibold text-slate-900 flex items-center space-x-2">
                       <span>🔍</span>
-                      <span>Search Results for "{searchQuery}"</span>
+                      <span>Search Results for &ldquo;{searchQuery}&rdquo;</span>
                     </h3>
                     <span className="text-sm text-slate-600 bg-slate-100 px-2 py-1 rounded-full">
                       {filteredMenuItems.length} found
