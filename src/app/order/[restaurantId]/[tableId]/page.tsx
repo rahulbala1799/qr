@@ -497,8 +497,6 @@ export default function TableOrderPage() {
                       ))}
                     </div>
 
-                    </div>
-
                     {/* Order Form */}
                     <div className="border-t border-gray-200 pt-4">
                       <div className="flex justify-between text-lg font-semibold mb-4">
