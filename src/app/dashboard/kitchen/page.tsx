@@ -20,6 +20,14 @@ interface OrderInfo {
   tableNumber: string
   createdAt: string
   orderStatus: string
+  isReopened: boolean
+  totalBatches: number
+}
+
+interface BatchInfo {
+  number: number
+  isOriginal: boolean
+  isNewAddition: boolean
 }
 
 interface OrderItem {
@@ -27,11 +35,13 @@ interface OrderItem {
   quantity: number
   price: number
   notes: string | null
-  status: 'PENDING' | 'CONFIRMED' | 'PREPARING' | 'READY' | 'DELIVERED' | 'CANCELLED'
+  status: 'PENDING' | 'CONFIRMED' | 'PREPARING' | 'READY' | 'DELIVERED' | 'CANCELLED' | 'REOPENED'
+  addedInBatch: number
   createdAt: string
   updatedAt: string
   menuItem: MenuItem
   order: OrderInfo
+  batch: BatchInfo
 }
 
 interface CategoryStats {
@@ -559,6 +569,181 @@ export default function KitchenManagementPage() {
           </div>
         )}
       </main>
+    </div>
+  )
+}
+
+// 🎨 INTELLIGENT KITCHEN ITEM CARD WITH BATCH VISUALIZATION
+function KitchenItemCard({ item }: { item: OrderItem }) {
+  const [isUpdating, setIsUpdating] = useState(false)
+  
+  const updateItemStatus = async (newStatus: 'PREPARING' | 'READY') => {
+    setIsUpdating(true)
+    try {
+      const response = await fetch(`/api/orders/items/${item.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to update item status')
+      }
+      
+      // The parent component will refresh the data
+    } catch (error) {
+      console.error('Error updating item status:', error)
+    } finally {
+      setIsUpdating(false)
+    }
+  }
+
+  // 🎨 INTELLIGENT VISUAL STYLING BASED ON BATCH AND ORDER STATE
+  const getBatchStyling = () => {
+    if (item.order.isReopened && item.batch.isNewAddition) {
+      // New items in reopened order - bright blue/purple gradient
+      return {
+        border: 'border-l-4 border-purple-500',
+        bg: 'bg-gradient-to-r from-purple-50 to-blue-50',
+        badge: 'bg-purple-100 text-purple-800',
+        badgeText: `NEW BATCH ${item.batch.number}`
+      }
+    } else if (item.batch.isOriginal && item.order.isReopened) {
+      // Original items in reopened order - subtle green
+      return {
+        border: 'border-l-4 border-green-400',
+        bg: 'bg-gradient-to-r from-green-50 to-emerald-50',
+        badge: 'bg-green-100 text-green-700',
+        badgeText: 'ORIGINAL'
+      }
+    } else if (item.batch.isNewAddition && !item.order.isReopened) {
+      // New addition to active order - orange
+      return {
+        border: 'border-l-4 border-orange-400',
+        bg: 'bg-gradient-to-r from-orange-50 to-yellow-50',
+        badge: 'bg-orange-100 text-orange-700',
+        badgeText: `ADDED BATCH ${item.batch.number}`
+      }
+    } else {
+      // Regular item - default styling
+      return {
+        border: 'border-l-4 border-gray-300',
+        bg: 'bg-white',
+        badge: 'bg-gray-100 text-gray-600',
+        badgeText: 'ORIGINAL'
+      }
+    }
+  }
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'PENDING': return 'bg-red-100 text-red-800 border-red-200'
+      case 'CONFIRMED': return 'bg-blue-100 text-blue-800 border-blue-200'
+      case 'PREPARING': return 'bg-yellow-100 text-yellow-800 border-yellow-200'
+      case 'READY': return 'bg-green-100 text-green-800 border-green-200'
+      default: return 'bg-gray-100 text-gray-800 border-gray-200'
+    }
+  }
+
+  const getPriorityLevel = () => {
+    const now = new Date()
+    const orderTime = new Date(item.order.createdAt)
+    const minutesOld = (now.getTime() - orderTime.getTime()) / (1000 * 60)
+    
+    if (minutesOld > 20) return { level: 'urgent', color: 'text-red-600', icon: '🚨' }
+    if (minutesOld > 10) return { level: 'high', color: 'text-orange-600', icon: '⚠️' }
+    return { level: 'normal', color: 'text-gray-600', icon: '⏰' }
+  }
+
+  const styling = getBatchStyling()
+  const priority = getPriorityLevel()
+
+  return (
+    <div className={`${styling.bg} ${styling.border} rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105`}>
+      {/* Header with Order Info and Batch Badge */}
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center space-x-2">
+          <span className="text-sm font-bold text-gray-900">#{item.order.orderNumber}</span>
+          <span className="text-xs text-gray-500">Table {item.order.tableNumber}</span>
+        </div>
+        <div className="flex items-center space-x-2">
+          {/* Batch Badge */}
+          <span className={`${styling.badge} px-2 py-1 rounded-full text-xs font-bold`}>
+            {styling.badgeText}
+          </span>
+          {/* Priority Indicator */}
+          <span className={`${priority.color} text-lg`} title={`${priority.level} priority`}>
+            {priority.icon}
+          </span>
+        </div>
+      </div>
+
+      {/* Reopened Order Alert */}
+      {item.order.isReopened && (
+        <div className="mb-3 bg-purple-100 border border-purple-200 rounded-lg p-2">
+          <div className="flex items-center space-x-2">
+            <span className="text-purple-600 text-sm">🔄</span>
+            <span className="text-purple-800 text-xs font-semibold">
+              REOPENED ORDER - {item.order.totalBatches} batches total
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* Menu Item Info */}
+      <div className="mb-4">
+        <h3 className="font-bold text-lg text-gray-900 mb-1">{item.menuItem.name}</h3>
+        <div className="flex items-center justify-between">
+          <span className="text-2xl font-bold text-indigo-600">×{item.quantity}</span>
+          <span className={`px-3 py-1 rounded-full text-sm font-bold border ${getStatusColor(item.status)}`}>
+            {item.status}
+          </span>
+        </div>
+        {item.notes && (
+          <div className="mt-2 bg-yellow-50 border border-yellow-200 rounded-lg p-2">
+            <p className="text-yellow-800 text-sm">📝 {item.notes}</p>
+          </div>
+        )}
+      </div>
+
+      {/* Action Buttons */}
+      <div className="flex space-x-2">
+        {item.status === 'PENDING' && (
+          <button
+            onClick={() => updateItemStatus('PREPARING')}
+            disabled={isUpdating}
+            className="flex-1 bg-gradient-to-r from-yellow-500 to-orange-500 text-white py-2 px-4 rounded-xl hover:from-yellow-600 hover:to-orange-600 transition-all duration-300 font-semibold text-sm shadow-lg hover:shadow-xl disabled:opacity-50"
+          >
+            {isUpdating ? '⏳' : '👨‍🍳 Start Cooking'}
+          </button>
+        )}
+        
+        {item.status === 'PREPARING' && (
+          <button
+            onClick={() => updateItemStatus('READY')}
+            disabled={isUpdating}
+            className="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 text-white py-2 px-4 rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all duration-300 font-semibold text-sm shadow-lg hover:shadow-xl disabled:opacity-50"
+          >
+            {isUpdating ? '⏳' : '✅ Mark Ready'}
+          </button>
+        )}
+        
+        {item.status === 'READY' && (
+          <div className="flex-1 bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 py-2 px-4 rounded-xl text-center font-semibold text-sm border border-green-200">
+            🎉 Ready for Pickup
+          </div>
+        )}
+      </div>
+
+      {/* Time Info */}
+      <div className="mt-3 text-xs text-gray-500 text-center">
+        Added {new Date(item.createdAt).toLocaleTimeString()} 
+        {item.batch.isNewAddition && (
+          <span className="ml-2 text-purple-600 font-semibold">
+            (Batch {item.batch.number})
+          </span>
+        )}
+      </div>
     </div>
   )
 }
