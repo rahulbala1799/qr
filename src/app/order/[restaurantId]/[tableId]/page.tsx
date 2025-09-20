@@ -729,103 +729,96 @@ export default function TableOrderPage() {
             </div>
 
             <div className="p-8">
-              {/* Modern Status Timeline */}
+              {/* Clean Mobile-Friendly Status Display */}
               <div className="mb-8">
-                <h3 className="text-xl font-bold text-slate-900 mb-6">Order Progress</h3>
-                <div className="relative">
-                  {/* Progress Line */}
-                  <div className="absolute top-8 left-8 right-8 h-1 bg-slate-200 rounded-full">
-                    <div 
-                      className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-1000 ease-out"
-                      style={{ 
-                        width: `${((['PENDING', 'CONFIRMED', 'PREPARING', 'READY', 'DELIVERED'].indexOf(orderStatus) + 1) / 5) * 100}%` 
-                      }}
-                    ></div>
+                <div className="text-center">
+                  {/* Current Status Icon - Large and Prominent */}
+                  <div className="relative inline-block mb-6">
+                    <div className="w-32 h-32 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-3xl flex items-center justify-center text-6xl shadow-2xl shadow-emerald-200 animate-pulse">
+                      {orderStatus === 'PENDING' && '📝'}
+                      {orderStatus === 'CONFIRMED' && '✅'}
+                      {orderStatus === 'PREPARING' && '👨‍🍳'}
+                      {orderStatus === 'READY' && '🍽️'}
+                      {orderStatus === 'DELIVERED' && '🎉'}
+                    </div>
+                    {/* Animated ring around the icon */}
+                    <div className="absolute inset-0 w-32 h-32 border-4 border-emerald-300 rounded-3xl animate-ping opacity-30"></div>
                   </div>
-                  
-                  {/* Status Steps */}
-                  <div className="relative flex justify-between">
-                    {[
-                      { key: 'PENDING', label: 'Order Received', icon: '📝', description: 'We got your order!' },
-                      { key: 'CONFIRMED', label: 'Confirmed', icon: '✅', description: 'Order confirmed' },
-                      { key: 'PREPARING', label: 'Cooking', icon: '👨‍🍳', description: 'Being prepared' },
-                      { key: 'READY', label: 'Ready', icon: '🍽️', description: 'Ready for pickup' },
-                      { key: 'DELIVERED', label: 'Complete', icon: '🎉', description: 'Enjoy your meal!' }
-                    ].map((status, index) => {
-                      const isActive = status.key === orderStatus
+
+                  {/* Current Status Title */}
+                  <h3 className="text-3xl font-bold text-slate-900 mb-2">
+                    {orderStatus === 'PENDING' && 'Order Received'}
+                    {orderStatus === 'CONFIRMED' && 'Order Confirmed'}
+                    {orderStatus === 'PREPARING' && 'Cooking in Progress'}
+                    {orderStatus === 'READY' && 'Ready for Pickup!'}
+                    {orderStatus === 'DELIVERED' && 'Order Complete'}
+                  </h3>
+
+                  {/* Status Description */}
+                  <p className="text-slate-600 text-lg leading-relaxed max-w-md mx-auto mb-6">
+                    {orderStatus === 'PENDING' && 'Your order has been received and is being reviewed by our kitchen team.'}
+                    {orderStatus === 'CONFIRMED' && 'Great! Your order has been confirmed and our chefs are getting ready.'}
+                    {orderStatus === 'PREPARING' && 'Our talented chefs are now preparing your order with fresh ingredients.'}
+                    {orderStatus === 'READY' && 'Fantastic! Your order is ready and waiting for you at the counter.'}
+                    {orderStatus === 'DELIVERED' && 'Thank you for choosing us! We hope you enjoyed your meal.'}
+                  </p>
+
+                  {/* Progress Indicator - Simple and Clean */}
+                  <div className="flex items-center justify-center space-x-2 mb-6">
+                    {['PENDING', 'CONFIRMED', 'PREPARING', 'READY', 'DELIVERED'].map((status, index) => {
+                      const isActive = status === orderStatus
                       const isCompleted = ['PENDING', 'CONFIRMED', 'PREPARING', 'READY', 'DELIVERED'].indexOf(orderStatus) >= index
                       
                       return (
-                        <div key={status.key} className="flex flex-col items-center relative z-10">
-                          <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl mb-3 transition-all duration-500 shadow-lg ${
+                        <div 
+                          key={status}
+                          className={`w-3 h-3 rounded-full transition-all duration-500 ${
                             isActive 
-                              ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white animate-pulse scale-110 shadow-emerald-200' 
+                              ? 'bg-emerald-500 scale-150 shadow-lg' 
                               : isCompleted 
-                                ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-emerald-200' 
-                                : 'bg-slate-100 text-slate-400 shadow-slate-100'
-                          }`}>
-                            {status.icon}
-                          </div>
-                          <div className="text-center">
-                            <p className={`font-semibold text-sm mb-1 ${
-                              isActive ? 'text-emerald-600' : isCompleted ? 'text-emerald-600' : 'text-slate-400'
-                            }`}>
-                              {status.label}
-                            </p>
-                            <p className={`text-xs ${
-                              isActive ? 'text-emerald-500' : isCompleted ? 'text-slate-600' : 'text-slate-400'
-                            }`}>
-                              {status.description}
-                            </p>
-                          </div>
-                          {isActive && (
-                            <div className="absolute -bottom-2 w-2 h-2 bg-emerald-500 rounded-full animate-bounce"></div>
-                          )}
-                        </div>
+                                ? 'bg-emerald-400' 
+                                : 'bg-slate-200'
+                          }`}
+                        ></div>
                       )
                     })}
                   </div>
+
+                  {/* Next Stage Preview - Only if not complete */}
+                  {orderStatus !== 'DELIVERED' && (
+                    <div className="bg-slate-50 rounded-2xl p-4 max-w-sm mx-auto">
+                      <p className="text-sm text-slate-500 mb-2">Next Stage</p>
+                      <div className="flex items-center justify-center space-x-3">
+                        <div className="w-8 h-8 bg-slate-200 rounded-xl flex items-center justify-center text-lg">
+                          {orderStatus === 'PENDING' && '✅'}
+                          {orderStatus === 'CONFIRMED' && '👨‍🍳'}
+                          {orderStatus === 'PREPARING' && '🍽️'}
+                          {orderStatus === 'READY' && '🎉'}
+                        </div>
+                        <span className="text-slate-700 font-medium">
+                          {orderStatus === 'PENDING' && 'Confirmation'}
+                          {orderStatus === 'CONFIRMED' && 'Cooking'}
+                          {orderStatus === 'PREPARING' && 'Ready'}
+                          {orderStatus === 'READY' && 'Complete'}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Special Animation for Preparing */}
+                  {orderStatus === 'PREPARING' && (
+                    <div className="mt-4 flex items-center justify-center space-x-2">
+                      <div className="flex space-x-1">
+                        <div className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce"></div>
+                        <div className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                        <div className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                      </div>
+                      <span className="text-sm text-emerald-600 font-medium ml-3">Cooking in progress...</span>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {/* Current Status Card */}
-              <div className="bg-gradient-to-r from-slate-50 to-slate-100 rounded-2xl p-6 mb-8 border border-slate-200">
-                <div className="flex items-start space-x-4">
-                  <div className="w-14 h-14 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center text-white text-xl shadow-lg">
-                    {orderStatus === 'PENDING' && '📝'}
-                    {orderStatus === 'CONFIRMED' && '✅'}
-                    {orderStatus === 'PREPARING' && '👨‍🍳'}
-                    {orderStatus === 'READY' && '🍽️'}
-                    {orderStatus === 'DELIVERED' && '🎉'}
-                  </div>
-                            <div className="flex-1">
-                    <h4 className="text-xl font-bold text-slate-900 mb-2">
-                      {orderStatus === 'PENDING' && 'Order Received'}
-                      {orderStatus === 'CONFIRMED' && 'Order Confirmed'}
-                      {orderStatus === 'PREPARING' && 'Cooking in Progress'}
-                      {orderStatus === 'READY' && 'Ready for Pickup!'}
-                      {orderStatus === 'DELIVERED' && 'Order Complete'}
-                    </h4>
-                    <p className="text-slate-600 leading-relaxed">
-                      {orderStatus === 'PENDING' && 'Your order has been received and is being reviewed by our kitchen team. You\'ll be notified once it\'s confirmed!'}
-                      {orderStatus === 'CONFIRMED' && 'Great! Your order has been confirmed and our chefs are getting ready to prepare your delicious meal.'}
-                      {orderStatus === 'PREPARING' && 'Our talented chefs are now preparing your order with fresh ingredients and lots of care. It won\'t be long now!'}
-                      {orderStatus === 'READY' && 'Fantastic! Your order is ready and waiting for you. Please come to the counter to collect your meal.'}
-                      {orderStatus === 'DELIVERED' && 'Thank you for choosing us! We hope you enjoyed your meal. Don\'t forget to leave a review!'}
-                    </p>
-                    {orderStatus === 'PREPARING' && (
-                      <div className="mt-3 flex items-center space-x-2">
-                        <div className="flex space-x-1">
-                          <div className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce"></div>
-                          <div className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                          <div className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                        </div>
-                        <span className="text-sm text-emerald-600 font-medium">Cooking in progress...</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Order Summary */}
