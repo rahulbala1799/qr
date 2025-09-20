@@ -179,7 +179,7 @@ export default function BulkQRPage() {
               </div>
               <div className="flex items-center">
                 <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center mr-2">2</div>
-                <span>Click "Generate PDF"</span>
+                <span>Click &quot;Generate PDF&quot;</span>
               </div>
               <div className="flex items-center">
                 <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center mr-2">3</div>

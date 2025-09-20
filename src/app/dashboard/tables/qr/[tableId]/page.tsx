@@ -34,9 +34,9 @@ export default function QRCodePage() {
     } else if (status === 'authenticated') {
       fetchQRData()
     }
-  }, [status, router, tableId])
+  }, [status, router, tableId, fetchQRData])
 
-  const fetchQRData = async () => {
+  const fetchQRData = useCallback(async () => {
     try {
       const [qrResponse, restaurantResponse] = await Promise.all([
         fetch(`/api/tables/${tableId}/qrcode`),
@@ -57,7 +57,7 @@ export default function QRCodePage() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [tableId])
 
   const handlePrint = () => {
     window.print()
@@ -188,7 +188,7 @@ export default function QRCodePage() {
                 <div className="bg-purple-50 p-4 rounded-lg">
                   <div className="text-2xl mb-2">✅</div>
                   <h4 className="font-semibold text-purple-900 mb-2">3. Place Order</h4>
-                  <p className="text-purple-800 text-sm">Complete your order and we'll bring it to your table</p>
+                  <p className="text-purple-800 text-sm">Complete your order and we&apos;ll bring it to your table</p>
                 </div>
               </div>
             </div>

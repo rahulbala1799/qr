@@ -58,7 +58,7 @@ export default function TableOrderPage() {
     if (restaurantId && tableId) {
       fetchData()
     }
-  }, [restaurantId, tableId])
+  }, [restaurantId, tableId, fetchData])
 
   // Scroll detection for category navigation
   useEffect(() => {

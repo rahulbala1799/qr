@@ -33,7 +33,7 @@ export default function OrderPage() {
     if (restaurantId) {
       fetchData()
     }
-  }, [restaurantId])
+  }, [restaurantId, fetchData])
 
   const fetchData = useCallback(async () => {
     try {

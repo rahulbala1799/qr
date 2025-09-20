@@ -45,9 +45,9 @@ export default function OrdersPage() {
     } else if (status === 'authenticated') {
       fetchOrders()
     }
-  }, [status, router, selectedStatus])
+  }, [status, router, selectedStatus, fetchOrders])
 
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     try {
       const url = selectedStatus === 'all' 
         ? `/api/orders?restaurantId=${session?.user?.id}`
@@ -65,7 +65,7 @@ export default function OrdersPage() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [session?.user?.id, selectedStatus])
 
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
     try {
