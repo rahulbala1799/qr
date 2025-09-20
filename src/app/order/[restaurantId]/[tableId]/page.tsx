@@ -247,7 +247,6 @@ export default function TableOrderPage() {
         setCustomerName('')
         setCustomerPhone('')
         setNotes('')
-        setShowCart(false)
       } else {
         setError(data.error || 'Failed to place order')
       }
