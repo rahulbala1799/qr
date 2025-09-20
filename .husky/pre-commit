@@ -1,0 +1,31 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "⛳ pre-commit: lint + typecheck + unit tests + lockfile guard"
+
+# Run linting
+npm run lint || {
+  echo "❌ Linting failed"; exit 1;
+}
+
+# Run type checking
+npm run typecheck || {
+  echo "❌ Type checking failed"; exit 1;
+}
+
+# Run unit tests
+npm run test:unit || {
+  echo "❌ Unit tests failed"; exit 1;
+}
+
+# Run lockfile guard
+node scripts/lockfile-guard.mjs || {
+  echo "❌ Lockfile / package.json mismatch"; exit 1;
+}
+
+# Run lint-staged
+npx lint-staged || {
+  echo "❌ lint-staged failed"; exit 1;
+}
+
+echo "✅ All pre-commit checks passed!"

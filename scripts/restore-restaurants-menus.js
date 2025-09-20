@@ -1,7 +1,7 @@
 const { PrismaClient } = require('@prisma/client')
 const fs = require('fs')
 const path = require('path')
-const bcrypt = require('bcryptjs')
+// const bcrypt = require('bcryptjs') // Unused in this script
 
 const prisma = new PrismaClient()
 

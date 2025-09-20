@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma'
 import { v4 as uuidv4 } from 'uuid'
 
 // GET /api/tables - Get all tables for the authenticated restaurant
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
     

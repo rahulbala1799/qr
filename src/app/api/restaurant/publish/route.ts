@@ -46,7 +46,7 @@ export async function PUT(request: NextRequest) {
 }
 
 // GET /api/restaurant/publish - Get current publish status
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
     

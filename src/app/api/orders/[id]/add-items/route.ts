@@ -47,7 +47,7 @@ export async function POST(
 
     // 🧠 INTELLIGENT ORDER STATE ANALYSIS
     const currentOrderStatus = existingOrder.status
-    const existingItemStatuses = existingOrder.orderItems.map(item => item.status)
+    // const existingItemStatuses = existingOrder.orderItems.map(item => item.status)
     
     // Determine the next batch number for new items
     const maxBatch = Math.max(...existingOrder.orderItems.map(item => item.addedInBatch), 0)
