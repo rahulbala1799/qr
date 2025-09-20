@@ -102,6 +102,7 @@ export default function TableOrderPage() {
   const [showCategoryView, setShowCategoryView] = useState(true)
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
+  const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null)
 
   // Calculate flat array of menu items with category information
   const menuItems = useMemo(() => {
@@ -137,6 +138,15 @@ export default function TableOrderPage() {
     
     return filtered
   }, [menuItems, searchQuery, selectedCategory])
+
+  // Cleanup search timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (searchTimeout) {
+        clearTimeout(searchTimeout)
+      }
+    }
+  }, [searchTimeout])
 
   // Load cart from localStorage on mount
   useEffect(() => {
@@ -910,11 +920,25 @@ export default function TableOrderPage() {
                     placeholder="Search for delicious food..."
                     value={searchQuery}
                     onChange={(e) => {
-                      setSearchQuery(e.target.value)
-                      // When user starts typing, automatically switch to search results view
-                      if (e.target.value.trim()) {
-                        setSelectedCategory('all')
-                        setShowCategoryView(false)
+                      const value = e.target.value
+                      setSearchQuery(value)
+                      
+                      // Clear existing timeout
+                      if (searchTimeout) {
+                        clearTimeout(searchTimeout)
+                      }
+                      
+                      // Set new timeout to switch views after user stops typing
+                      if (value.trim().length >= 2) {
+                        const newTimeout = setTimeout(() => {
+                          setSelectedCategory('all')
+                          setShowCategoryView(false)
+                        }, 500) // Wait 500ms after user stops typing
+                        setSearchTimeout(newTimeout)
+                      } else if (value.trim().length === 0) {
+                        // If search is completely cleared, return to category view immediately
+                        setShowCategoryView(true)
+                        setSelectedCategory(null)
                       }
                     }}
                     className="block w-full pl-12 pr-4 py-4 border-0 rounded-2xl bg-white/80 backdrop-blur-sm shadow-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-lg placeholder-slate-400"
@@ -981,6 +1005,47 @@ export default function TableOrderPage() {
                   </div>
                 ))}
               </div>
+
+              {/* Search Results Preview - Show while typing */}
+              {searchQuery && searchQuery.trim().length >= 1 && showCategoryView && (
+                <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 border border-white/40 shadow-lg">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-slate-900 flex items-center space-x-2">
+                      <span>🔍</span>
+                      <span>Search Results for "{searchQuery}"</span>
+                    </h3>
+                    <span className="text-sm text-slate-600 bg-slate-100 px-2 py-1 rounded-full">
+                      {filteredMenuItems.length} found
+                    </span>
+                  </div>
+                  
+                  {filteredMenuItems.length === 0 ? (
+                    <p className="text-slate-600 text-center py-4">No items found. Try a different search term.</p>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-60 overflow-y-auto">
+                      {filteredMenuItems.slice(0, 6).map((item: MenuItem) => (
+                        <div key={item.id} className="flex items-center space-x-3 p-3 bg-white/60 rounded-xl hover:bg-white/80 transition-colors">
+                          <div className="text-lg">{getCategoryIcon(item.category)}</div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-slate-900 truncate">{item.name}</p>
+                            <p className="text-xs text-slate-600">{item.category}</p>
+                          </div>
+                          <div className="text-sm font-semibold text-indigo-600">
+                            {restaurant?.currency || '€'}{item.price.toFixed(2)}
+                          </div>
+                        </div>
+                      ))}
+                      {filteredMenuItems.length > 6 && (
+                        <div className="col-span-full text-center py-2">
+                          <p className="text-sm text-slate-600">
+                            +{filteredMenuItems.length - 6} more items. Keep typing or wait to see all results.
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Quick Stats */}
               <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/40">
