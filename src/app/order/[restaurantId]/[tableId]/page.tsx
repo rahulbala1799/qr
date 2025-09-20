@@ -688,86 +688,84 @@ export default function TableOrderPage() {
           </button>
         )}
       </div>
+      {/* Custom CSS Animations */}
+      <style jsx global>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes slideInRight {
+          from {
+            opacity: 0;
+            transform: translateX(100%);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        @keyframes slideOutRight {
+          from {
+            opacity: 1;
+            transform: translateX(0);
+          }
+          to {
+            opacity: 0;
+            transform: translateX(100%);
+          }
+        }
+
+        .animate-slide-in-right {
+          animation: slideInRight 0.3s ease-out forwards;
+        }
+
+        .animate-slide-out-right {
+          animation: slideOutRight 0.3s ease-in forwards;
+        }
+
+        /* Enhanced scrollbar for cart */
+        .cart-scroll::-webkit-scrollbar {
+          width: 6px;
+        }
+
+        .cart-scroll::-webkit-scrollbar-track {
+          background: #f1f5f9;
+          border-radius: 3px;
+        }
+
+        .cart-scroll::-webkit-scrollbar-thumb {
+          background: #cbd5e1;
+          border-radius: 3px;
+        }
+
+        .cart-scroll::-webkit-scrollbar-thumb:hover {
+          background: #94a3b8;
+        }
+
+        /* Loading shimmer effect */
+        @keyframes shimmer {
+          0% {
+            background-position: -200px 0;
+          }
+          100% {
+            background-position: calc(200px + 100%) 0;
+          }
+        }
+
+        .shimmer {
+          background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+          background-size: 200px 100%;
+          animation: shimmer 1.5s infinite;
+        }
+      `}</style>
     </div>
-
-    {/* Custom CSS Animations */}
-    <style jsx global>{`
-      @keyframes fadeInUp {
-        from {
-          opacity: 0;
-          transform: translateY(30px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      @keyframes slideInRight {
-        from {
-          opacity: 0;
-          transform: translateX(100%);
-        }
-        to {
-          opacity: 1;
-          transform: translateX(0);
-        }
-      }
-
-      @keyframes slideOutRight {
-        from {
-          opacity: 1;
-          transform: translateX(0);
-        }
-        to {
-          opacity: 0;
-          transform: translateX(100%);
-        }
-      }
-
-      .animate-slide-in-right {
-        animation: slideInRight 0.3s ease-out forwards;
-      }
-
-      .animate-slide-out-right {
-        animation: slideOutRight 0.3s ease-in forwards;
-      }
-
-      /* Enhanced scrollbar for cart */
-      .cart-scroll::-webkit-scrollbar {
-        width: 6px;
-      }
-
-      .cart-scroll::-webkit-scrollbar-track {
-        background: #f1f5f9;
-        border-radius: 3px;
-      }
-
-      .cart-scroll::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
-        border-radius: 3px;
-      }
-
-      .cart-scroll::-webkit-scrollbar-thumb:hover {
-        background: #94a3b8;
-      }
-
-      /* Loading shimmer effect */
-      @keyframes shimmer {
-        0% {
-          background-position: -200px 0;
-        }
-        100% {
-          background-position: calc(200px + 100%) 0;
-        }
-      }
-
-      .shimmer {
-        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-        background-size: 200px 100%;
-        animation: shimmer 1.5s infinite;
-      }
-    `}</style>
-  </div>
   )
 }
