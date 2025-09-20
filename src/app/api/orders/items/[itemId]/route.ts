@@ -70,13 +70,13 @@ export async function PUT(
     let newOrderStatus = null
     const itemStatuses = allOrderItems.map(item => item.status)
     
-    if (itemStatuses.every(s => s === 'DELIVERED' || s === 'COMPLETED')) {
+    if (itemStatuses.every(s => s === 'DELIVERED')) {
       newOrderStatus = 'DELIVERED'
-    } else if (itemStatuses.some(s => s === 'READY') && itemStatuses.every(s => ['READY', 'DELIVERED', 'COMPLETED'].includes(s))) {
+    } else if (itemStatuses.some(s => s === 'READY') && itemStatuses.every(s => ['READY', 'DELIVERED'].includes(s))) {
       newOrderStatus = 'READY'
-    } else if (itemStatuses.some(s => s === 'PREPARING') && itemStatuses.every(s => ['PREPARING', 'READY', 'DELIVERED', 'COMPLETED'].includes(s))) {
+    } else if (itemStatuses.some(s => s === 'PREPARING') && itemStatuses.every(s => ['PREPARING', 'READY', 'DELIVERED'].includes(s))) {
       newOrderStatus = 'PREPARING'
-    } else if (itemStatuses.every(s => ['CONFIRMED', 'PREPARING', 'READY', 'DELIVERED', 'COMPLETED'].includes(s))) {
+    } else if (itemStatuses.every(s => ['CONFIRMED', 'PREPARING', 'READY', 'DELIVERED'].includes(s))) {
       newOrderStatus = 'CONFIRMED'
     }
 
