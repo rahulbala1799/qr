@@ -268,10 +268,12 @@ export default function TableOrderPage() {
   // Track order status
   const trackOrderStatus = useCallback(async (orderId: string) => {
     try {
+      console.log('Tracking order:', orderId)
       const response = await fetch(`/api/orders/${orderId}`)
       if (response.ok) {
         const data = await response.json()
         const newStatus = data.order.status
+        console.log('Order status update:', newStatus, 'Previous:', orderStatus)
         
         // Check if status changed
         if (orderStatus && orderStatus !== newStatus) {
@@ -282,7 +284,7 @@ export default function TableOrderPage() {
             'CONFIRMED': 'Your order has been confirmed! 🎉',
             'PREPARING': 'Your order is being prepared! 👨‍🍳',
             'READY': 'Your order is ready for pickup! 🍽️',
-            'COMPLETED': 'Order completed! Thank you! ✅'
+            'DELIVERED': 'Order completed! Thank you! ✅'
           }
           
           const message = statusMessages[newStatus as keyof typeof statusMessages]
@@ -311,8 +313,8 @@ export default function TableOrderPage() {
         setOrderStatus(newStatus)
         setPlacedOrder(data.order)
         
-        // Stop tracking if order is completed
-        if (newStatus === 'COMPLETED') {
+        // Stop tracking if order is delivered
+        if (newStatus === 'DELIVERED') {
           setIsTrackingOrder(false)
         }
       }
@@ -324,6 +326,9 @@ export default function TableOrderPage() {
   // Polling effect for order tracking
   useEffect(() => {
     if (isTrackingOrder && placedOrder?.id) {
+      // Start tracking immediately
+      trackOrderStatus(placedOrder.id)
+      
       const pollInterval = setInterval(() => {
         trackOrderStatus(placedOrder.id)
       }, 3000) // Poll every 3 seconds
@@ -375,12 +380,16 @@ export default function TableOrderPage() {
       const urlParams = new URLSearchParams(window.location.search)
       const shouldTrack = urlParams.get('tracking') === 'true'
       
-      if (shouldTrack) {
-        // Load order data from localStorage
-        const storedOrderData = localStorage.getItem(`placed_order_${restaurantId}_${tableId}`)
-        if (storedOrderData) {
-          try {
-            const { order } = JSON.parse(storedOrderData)
+      // Always check for existing order data, not just when tracking=true
+      const storedOrderData = localStorage.getItem(`placed_order_${restaurantId}_${tableId}`)
+      if (storedOrderData) {
+        try {
+          const { order, timestamp } = JSON.parse(storedOrderData)
+          // Only restore if the order is recent (within last 2 hours) and not delivered
+          const isRecent = timestamp && (Date.now() - timestamp) < 2 * 60 * 60 * 1000
+          const isActive = order.status && !['DELIVERED', 'CANCELLED'].includes(order.status)
+          
+          if (isRecent && isActive) {
             setPlacedOrder(order)
             setOrderStatus(order.status)
             setIsTrackingOrder(true)
@@ -394,9 +403,9 @@ export default function TableOrderPage() {
             
             // Clean up URL
             window.history.replaceState({}, '', `/order/${restaurantId}/${tableId}`)
-          } catch (error) {
-            console.error('Error loading order data:', error)
           }
+        } catch (error) {
+          console.error('Error loading order data:', error)
         }
       }
     }
