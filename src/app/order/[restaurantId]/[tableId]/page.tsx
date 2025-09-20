@@ -56,6 +56,27 @@ export default function TableOrderPage() {
   const [cartAnimation, setCartAnimation] = useState('')
   const [itemAnimations, setItemAnimations] = useState<Record<string, string>>({})
 
+  // Load cart from localStorage on mount
+  useEffect(() => {
+    const savedCart = localStorage.getItem(`cart_${restaurantId}_${tableId}`)
+    if (savedCart) {
+      try {
+        setCart(JSON.parse(savedCart))
+      } catch (error) {
+        console.error('Error loading cart from localStorage:', error)
+      }
+    }
+  }, [restaurantId, tableId])
+
+  // Save cart to localStorage whenever it changes
+  useEffect(() => {
+    if (cart.length > 0) {
+      localStorage.setItem(`cart_${restaurantId}_${tableId}`, JSON.stringify(cart))
+    } else {
+      localStorage.removeItem(`cart_${restaurantId}_${tableId}`)
+    }
+  }, [cart, restaurantId, tableId])
+
   const fetchData = useCallback(async () => {
     try {
       // Fetch menu and restaurant data
@@ -248,6 +269,8 @@ export default function TableOrderPage() {
         setCustomerName('')
         setCustomerPhone('')
         setNotes('')
+        // Clear cart from localStorage
+        localStorage.removeItem(`cart_${restaurantId}_${tableId}`)
       } else {
         setError(data.error || 'Failed to place order')
       }
