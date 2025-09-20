@@ -121,6 +121,19 @@ export default function TableOrderPage() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [categories])
 
+  // Prevent body scroll when cart is open on mobile
+  useEffect(() => {
+    if (showCart) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [showCart])
+
   const addToCart = (menuItem: MenuItem) => {
     setCart(prev => {
       const existingItem = prev.find(item => item.menuItem.id === menuItem.id)
@@ -398,11 +411,15 @@ export default function TableOrderPage() {
           <div className="lg:col-span-1">
             {/* Mobile Cart Overlay */}
             {showCart && (
-              <div className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40" onClick={() => setShowCart(false)}></div>
+              <div 
+                className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40" 
+                onClick={() => setShowCart(false)}
+                style={{ touchAction: 'none' }}
+              ></div>
             )}
             
             <div className={`bg-white rounded-lg shadow-sm ${showCart ? 'block' : 'hidden lg:block'} ${showCart ? 'fixed right-0 top-0 h-full w-full max-w-md bg-white shadow-xl z-50 lg:relative lg:shadow-sm lg:max-w-none lg:w-auto lg:h-auto' : ''}`}>
-              <div className={`${showCart ? 'h-full flex flex-col' : ''}`}>
+              <div className={`${showCart ? 'h-full flex flex-col overflow-hidden' : ''}`}>
                 <div className={`${showCart ? 'flex-shrink-0' : ''} p-6`}>
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-lg font-semibold text-gray-900">Your Order</h2>
@@ -426,9 +443,9 @@ export default function TableOrderPage() {
                   <p className="text-gray-500 text-center py-8">Your cart is empty</p>
                 ) : (
                   <>
-                    <div className={`space-y-4 mb-6 ${showCart ? 'flex-1 overflow-y-auto' : ''}`}>
+                    <div className={`space-y-4 mb-6 ${showCart ? 'flex-1 overflow-y-auto px-6 -mx-6' : ''}`}>
                       {cart.map((item) => (
-                        <div key={item.menuItem.id} className="border-b border-gray-200 pb-4">
+                        <div key={item.menuItem.id} className={`border-b border-gray-200 pb-4 ${showCart ? 'px-6' : ''}`}>
                           <div className="flex justify-between items-start">
                             <div className="flex-1">
                               <h3 className="font-medium text-gray-900">{item.menuItem.name}</h3>
