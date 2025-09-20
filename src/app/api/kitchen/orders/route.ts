@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { OrderStatus } from '@prisma/client'
 
 // GET /api/kitchen/orders - Get all orders for kitchen management
 export async function GET(request: NextRequest) {
@@ -16,11 +17,11 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get('status')
     const category = searchParams.get('category')
 
-    // Build where clause
+    // Build where clause - Include REOPENED orders for kitchen attention
     const whereClause: any = {
       restaurantId: session.user.id,
       status: {
-        not: 'DELIVERED' // Don't show completed orders in kitchen
+        notIn: [OrderStatus.DELIVERED, OrderStatus.CANCELLED] // Include REOPENED orders
       }
     }
 
@@ -45,8 +46,9 @@ export async function GET(request: NextRequest) {
             }
           },
           orderBy: [
-            { status: 'asc' }, // Show pending items first
-            { createdAt: 'asc' }
+            { addedInBatch: 'asc' }, // Group by batch (original items first)
+            { status: 'asc' },       // Then by status (pending first)
+            { createdAt: 'asc' }     // Finally by creation time
           ]
         },
         table: {
@@ -56,9 +58,10 @@ export async function GET(request: NextRequest) {
           }
         }
       },
-      orderBy: {
-        createdAt: 'asc' // Oldest orders first (FIFO)
-      }
+      orderBy: [
+        { status: 'asc' },    // REOPENED orders get priority
+        { createdAt: 'asc' }  // Then oldest orders first (FIFO)
+      ]
     })
 
     // Filter by category if specified
@@ -92,7 +95,14 @@ export async function GET(request: NextRequest) {
             customerPhone: order.customerPhone,
             tableNumber: order.table.tableNumber,
             createdAt: order.createdAt,
-            orderStatus: order.status
+            orderStatus: order.status,
+            isReopened: order.status === OrderStatus.REOPENED,
+            totalBatches: Math.max(...order.orderItems.map(oi => oi.addedInBatch))
+          },
+          batch: {
+            number: item.addedInBatch,
+            isOriginal: item.addedInBatch === 1,
+            isNewAddition: item.addedInBatch > 1
           }
         }
 
