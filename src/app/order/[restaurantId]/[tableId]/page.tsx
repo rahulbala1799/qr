@@ -402,7 +402,8 @@ export default function TableOrderPage() {
             )}
             
             <div className={`bg-white rounded-lg shadow-sm ${showCart ? 'block' : 'hidden lg:block'} ${showCart ? 'fixed right-0 top-0 h-full w-full max-w-md bg-white shadow-xl z-50 lg:relative lg:shadow-sm lg:max-w-none lg:w-auto lg:h-auto' : ''}`}>
-              <div className="p-6">
+              <div className={`${showCart ? 'h-full flex flex-col' : ''}`}>
+                <div className={`${showCart ? 'flex-shrink-0' : ''} p-6`}>
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-lg font-semibold text-gray-900">Your Order</h2>
                   <button
@@ -425,7 +426,7 @@ export default function TableOrderPage() {
                   <p className="text-gray-500 text-center py-8">Your cart is empty</p>
                 ) : (
                   <>
-                    <div className="space-y-4 mb-6">
+                    <div className={`space-y-4 mb-6 ${showCart ? 'flex-1 overflow-y-auto' : ''}`}>
                       {cart.map((item) => (
                         <div key={item.menuItem.id} className="border-b border-gray-200 pb-4">
                           <div className="flex justify-between items-start">
@@ -466,7 +467,7 @@ export default function TableOrderPage() {
                       ))}
                     </div>
 
-                    <div className="border-t border-gray-200 pt-4">
+                    <div className={`border-t border-gray-200 pt-4 ${showCart ? 'flex-shrink-0' : ''}`}>
                       <div className="flex justify-between text-lg font-semibold mb-4">
                         <span>Total:</span>
                         <span>{restaurant?.currency || '€'}{getTotalAmount().toFixed(2)}</span>
@@ -524,6 +525,7 @@ export default function TableOrderPage() {
                     </div>
                   </>
                 )}
+                </div>
               </div>
             </div>
           </div>
