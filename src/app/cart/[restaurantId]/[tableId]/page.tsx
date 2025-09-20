@@ -213,10 +213,10 @@ export default function CartPage() {
           timestamp: Date.now()
         }))
         
-        // Redirect back to order page with tracking after 2 seconds
+        // Redirect back to order page with tracking immediately after success message
         setTimeout(() => {
           router.push(`/order/${restaurantId}/${tableId}?tracking=true`)
-        }, 2000)
+        }, 1000)
       } else {
         const errorData = await response.json()
         setError(errorData.error || 'Failed to place order')

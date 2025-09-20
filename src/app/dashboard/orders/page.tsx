@@ -71,6 +71,41 @@ export default function OrdersPage() {
     }
   }, [soundEnabled])
 
+  // Play LOUD alarm for order ready
+  const playOrderReadyAlarm = useCallback(() => {
+    if (!soundEnabled) return
+    
+    try {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+      
+      // Create multiple oscillators for a loud alarm
+      for (let i = 0; i < 3; i++) {
+        setTimeout(() => {
+          const oscillator = audioContext.createOscillator()
+          const gainNode = audioContext.createGain()
+          
+          oscillator.connect(gainNode)
+          gainNode.connect(audioContext.destination)
+          
+          // Create urgent alarm sound (alternating high-low)
+          oscillator.frequency.setValueAtTime(1000, audioContext.currentTime)
+          oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.2)
+          oscillator.frequency.setValueAtTime(1000, audioContext.currentTime + 0.4)
+          oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.6)
+          
+          // Much louder volume
+          gainNode.gain.setValueAtTime(0.6, audioContext.currentTime)
+          gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.8)
+          
+          oscillator.start(audioContext.currentTime)
+          oscillator.stop(audioContext.currentTime + 0.8)
+        }, i * 300) // Repeat 3 times with delay
+      }
+    } catch (error) {
+      console.error('Error playing order ready alarm:', error)
+    }
+  }, [soundEnabled])
+
   const fetchOrders = useCallback(async () => {
     try {
       setIsConnected(true)
@@ -152,7 +187,7 @@ export default function OrdersPage() {
     setNewOrdersCount(0)
   }
 
-  const updateOrderStatus = async (orderId: string, newStatus: string) => {
+  const updateOrderStatus = useCallback(async (orderId: string, newStatus: string) => {
     try {
       const response = await fetch(`/api/orders/${orderId}`, {
         method: 'PUT',
@@ -163,6 +198,21 @@ export default function OrdersPage() {
       })
 
       if (response.ok) {
+        // Play loud alarm if order is marked as READY
+        if (newStatus === 'READY') {
+          playOrderReadyAlarm()
+          
+          // Show special notification for ready orders
+          if (Notification.permission === 'granted') {
+            new Notification('🍽️ ORDER READY FOR PICKUP!', {
+              body: `Order is ready and waiting for customer pickup`,
+              icon: '/favicon.ico',
+              tag: 'order-ready',
+              requireInteraction: true // Keeps notification visible until clicked
+            })
+          }
+        }
+        
         // Refresh orders
         fetchOrders()
       } else {
@@ -172,7 +222,7 @@ export default function OrdersPage() {
     } catch (error) {
       setError('Error updating order status')
     }
-  }
+  }, [playOrderReadyAlarm, fetchOrders])
 
   const getStatusColor = (status: string) => {
     switch (status) {
