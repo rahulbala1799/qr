@@ -229,7 +229,7 @@ export default function CartPage() {
         const result = await response.json()
         
         if (existingOrderData) {
-          setSuccess('Items added to your existing order #' + result.order.orderNumber)
+          setSuccess(`✅ Items added to existing Order #${result.order.orderNumber}! Same bill, more deliciousness!`)
         } else {
           setSuccess('Order placed successfully! Your order number is #' + result.order.orderNumber)
         }
