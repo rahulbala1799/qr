@@ -67,17 +67,17 @@ export async function PUT(
     })
 
     // Determine overall order status based on item statuses
-    let newOrderStatus = null
+    let newOrderStatus: OrderStatus | null = null
     const itemStatuses = allOrderItems.map(item => item.status)
     
     if (itemStatuses.every(s => s === 'DELIVERED')) {
-      newOrderStatus = 'DELIVERED'
+      newOrderStatus = OrderStatus.DELIVERED
     } else if (itemStatuses.some(s => s === 'READY') && itemStatuses.every(s => ['READY', 'DELIVERED'].includes(s))) {
-      newOrderStatus = 'READY'
+      newOrderStatus = OrderStatus.READY
     } else if (itemStatuses.some(s => s === 'PREPARING') && itemStatuses.every(s => ['PREPARING', 'READY', 'DELIVERED'].includes(s))) {
-      newOrderStatus = 'PREPARING'
+      newOrderStatus = OrderStatus.PREPARING
     } else if (itemStatuses.every(s => ['CONFIRMED', 'PREPARING', 'READY', 'DELIVERED'].includes(s))) {
-      newOrderStatus = 'CONFIRMED'
+      newOrderStatus = OrderStatus.CONFIRMED
     }
 
     // Update order status if needed
