@@ -52,6 +52,9 @@ export default function TableOrderPage() {
   const [isOrdering, setIsOrdering] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const [placedOrder, setPlacedOrder] = useState<any>(null)
+  const [orderStatus, setOrderStatus] = useState('')
+  const [isTrackingOrder, setIsTrackingOrder] = useState(false)
   const [activeCategory, setActiveCategory] = useState<string>('')
   const [cartAnimation, setCartAnimation] = useState('')
   const [itemAnimations, setItemAnimations] = useState<Record<string, string>>({})
@@ -76,6 +79,98 @@ export default function TableOrderPage() {
       localStorage.removeItem(`cart_${restaurantId}_${tableId}`)
     }
   }, [cart, restaurantId, tableId])
+
+  // Play customer notification sound
+  const playCustomerNotification = useCallback(() => {
+    try {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+      const oscillator = audioContext.createOscillator()
+      const gainNode = audioContext.createGain()
+      
+      oscillator.connect(gainNode)
+      gainNode.connect(audioContext.destination)
+      
+      // Create a pleasant success sound
+      oscillator.frequency.setValueAtTime(523, audioContext.currentTime) // C5
+      oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.1) // E5
+      oscillator.frequency.setValueAtTime(784, audioContext.currentTime + 0.2) // G5
+      
+      gainNode.gain.setValueAtTime(0.2, audioContext.currentTime)
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4)
+      
+      oscillator.start(audioContext.currentTime)
+      oscillator.stop(audioContext.currentTime + 0.4)
+    } catch (error) {
+      console.error('Error playing notification sound:', error)
+    }
+  }, [])
+
+  // Track order status
+  const trackOrderStatus = useCallback(async (orderId: string) => {
+    try {
+      const response = await fetch(`/api/orders/${orderId}`)
+      if (response.ok) {
+        const data = await response.json()
+        const newStatus = data.order.status
+        
+        // Check if status changed
+        if (orderStatus && orderStatus !== newStatus) {
+          playCustomerNotification()
+          
+          // Show status update notification
+          const statusMessages = {
+            'CONFIRMED': 'Your order has been confirmed! 🎉',
+            'PREPARING': 'Your order is being prepared! 👨‍🍳',
+            'READY': 'Your order is ready for pickup! 🍽️',
+            'COMPLETED': 'Order completed! Thank you! ✅'
+          }
+          
+          const message = statusMessages[newStatus as keyof typeof statusMessages]
+          if (message) {
+            // Show toast notification
+            const toast = document.createElement('div')
+            toast.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-bounce'
+            toast.innerHTML = `
+              <div class="flex items-center space-x-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span class="font-medium">${message}</span>
+              </div>
+            `
+            document.body.appendChild(toast)
+            
+            setTimeout(() => {
+              if (document.body.contains(toast)) {
+                document.body.removeChild(toast)
+              }
+            }, 5000)
+          }
+        }
+        
+        setOrderStatus(newStatus)
+        setPlacedOrder(data.order)
+        
+        // Stop tracking if order is completed
+        if (newStatus === 'COMPLETED') {
+          setIsTrackingOrder(false)
+        }
+      }
+    } catch (error) {
+      console.error('Error tracking order:', error)
+    }
+  }, [orderStatus, playCustomerNotification])
+
+  // Polling effect for order tracking
+  useEffect(() => {
+    if (isTrackingOrder && placedOrder?.id) {
+      const pollInterval = setInterval(() => {
+        trackOrderStatus(placedOrder.id)
+      }, 3000) // Poll every 3 seconds
+      
+      return () => clearInterval(pollInterval)
+    }
+  }, [isTrackingOrder, placedOrder?.id, trackOrderStatus])
 
   const fetchData = useCallback(async () => {
     try {
@@ -265,12 +360,39 @@ export default function TableOrderPage() {
 
       if (response.ok) {
         setSuccess(`Order placed successfully! Order #${data.order.orderNumber}`)
+        setPlacedOrder(data.order)
+        setOrderStatus(data.order.status)
+        setIsTrackingOrder(true)
         setCart([])
         setCustomerName('')
         setCustomerPhone('')
         setNotes('')
         // Clear cart from localStorage
         localStorage.removeItem(`cart_${restaurantId}_${tableId}`)
+        
+        // Play success sound
+        playCustomerNotification()
+        
+        // Show initial confirmation
+        setTimeout(() => {
+          const toast = document.createElement('div')
+          toast.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white px-6 py-3 rounded-lg shadow-lg z-50'
+          toast.innerHTML = `
+            <div class="flex items-center space-x-2">
+              <svg class="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+              </svg>
+              <span class="font-medium">Stay on this page to track your order status!</span>
+            </div>
+          `
+          document.body.appendChild(toast)
+          
+          setTimeout(() => {
+            if (document.body.contains(toast)) {
+              document.body.removeChild(toast)
+            }
+          }, 8000)
+        }, 2000)
       } else {
         setError(data.error || 'Failed to place order')
       }
@@ -382,6 +504,144 @@ export default function TableOrderPage() {
           </div>
         </div>
       )}
+
+      {/* Live Order Tracking */}
+      {placedOrder && isTrackingOrder && (
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6 shadow-lg">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                  🎉 Order Placed Successfully!
+                </h2>
+                <p className="text-gray-600">
+                  Order #{placedOrder.orderNumber} • Table {table?.tableNumber}
+                </p>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-sm font-medium text-green-700">LIVE TRACKING</span>
+              </div>
+            </div>
+
+            {/* Order Status Timeline */}
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Order Status</h3>
+              <div className="flex items-center justify-between">
+                {['PENDING', 'CONFIRMED', 'PREPARING', 'READY', 'COMPLETED'].map((status, index) => {
+                  const isActive = status === orderStatus
+                  const isCompleted = ['PENDING', 'CONFIRMED', 'PREPARING', 'READY', 'COMPLETED'].indexOf(orderStatus) >= index
+                  const statusIcons = {
+                    'PENDING': '⏳',
+                    'CONFIRMED': '✅',
+                    'PREPARING': '👨‍🍳',
+                    'READY': '🍽️',
+                    'COMPLETED': '🎉'
+                  }
+                  
+                  return (
+                    <div key={status} className="flex flex-col items-center">
+                      <div className={`w-12 h-12 rounded-full flex items-center justify-center text-xl mb-2 transition-all duration-300 ${
+                        isActive 
+                          ? 'bg-blue-500 text-white animate-pulse scale-110' 
+                          : isCompleted 
+                            ? 'bg-green-500 text-white' 
+                            : 'bg-gray-200 text-gray-400'
+                      }`}>
+                        {statusIcons[status as keyof typeof statusIcons]}
+                      </div>
+                      <span className={`text-xs font-medium ${
+                        isActive ? 'text-blue-600' : isCompleted ? 'text-green-600' : 'text-gray-400'
+                      }`}>
+                        {status.replace('_', ' ')}
+                      </span>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* Current Status Message */}
+            <div className="bg-white rounded-lg p-4 mb-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                  {orderStatus === 'PENDING' && '⏳'}
+                  {orderStatus === 'CONFIRMED' && '✅'}
+                  {orderStatus === 'PREPARING' && '👨‍🍳'}
+                  {orderStatus === 'READY' && '🍽️'}
+                  {orderStatus === 'COMPLETED' && '🎉'}
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-900">
+                    {orderStatus === 'PENDING' && 'Order Received'}
+                    {orderStatus === 'CONFIRMED' && 'Order Confirmed'}
+                    {orderStatus === 'PREPARING' && 'Being Prepared'}
+                    {orderStatus === 'READY' && 'Ready for Pickup'}
+                    {orderStatus === 'COMPLETED' && 'Order Complete'}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    {orderStatus === 'PENDING' && 'Your order is being reviewed by the restaurant'}
+                    {orderStatus === 'CONFIRMED' && 'The restaurant has confirmed your order and will start preparing it soon'}
+                    {orderStatus === 'PREPARING' && 'Your delicious meal is being prepared with care'}
+                    {orderStatus === 'READY' && 'Your order is ready! Please collect it from the counter'}
+                    {orderStatus === 'COMPLETED' && 'Thank you for dining with us! We hope you enjoyed your meal'}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Order Summary */}
+            <div className="bg-white rounded-lg p-4">
+              <h4 className="font-semibold text-gray-900 mb-3">Order Summary</h4>
+              <div className="space-y-2">
+                {placedOrder.orderItems?.map((item: any, index: number) => (
+                  <div key={index} className="flex justify-between items-center text-sm">
+                    <span className="text-gray-700">
+                      {item.quantity}x {item.menuItem?.name || 'Item'}
+                    </span>
+                    <span className="font-medium">
+                      {restaurant?.currency || '€'}{((item.menuItem?.price || 0) * item.quantity).toFixed(2)}
+                    </span>
+                  </div>
+                ))}
+                <div className="border-t pt-2 mt-2">
+                  <div className="flex justify-between items-center font-semibold">
+                    <span>Total</span>
+                    <span className="text-lg text-blue-600">
+                      {restaurant?.currency || '€'}{Number(placedOrder.totalAmount || 0).toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Customer Info */}
+            {(placedOrder.customerName || placedOrder.customerPhone) && (
+              <div className="bg-white rounded-lg p-4 mt-4">
+                <h4 className="font-semibold text-gray-900 mb-3">Customer Information</h4>
+                {placedOrder.customerName && (
+                  <p className="text-sm text-gray-600">Name: {placedOrder.customerName}</p>
+                )}
+                {placedOrder.customerPhone && (
+                  <p className="text-sm text-gray-600">Phone: {placedOrder.customerPhone}</p>
+                )}
+              </div>
+            )}
+
+            {/* Stay on Page Reminder */}
+            <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <div className="flex items-center space-x-2">
+                <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p className="text-sm text-yellow-800">
+                  <strong>Stay on this page</strong> to receive live updates about your order status with sound notifications!
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       {error && (
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md">
@@ -390,10 +650,12 @@ export default function TableOrderPage() {
         </div>
       )}
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Menu */}
-          <div className="lg:col-span-2">
+      {/* Menu Section - Hide when tracking order */}
+      {!isTrackingOrder && (
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Menu */}
+            <div className="lg:col-span-2">
             {categories.length === 0 ? (
               <div className="text-center py-12">
                 <h2 className="text-xl font-semibold text-gray-900 mb-2">No Menu Items Available</h2>
@@ -518,8 +780,10 @@ export default function TableOrderPage() {
           </div>
         </div>
       </div>
+      )}
 
-      {/* Floating Buttons */}
+      {/* Floating Buttons - Hide when tracking order */}
+      {!isTrackingOrder && (
       <div className="fixed bottom-4 right-4 z-30 flex flex-col space-y-2">
         {/* Back to Top Button */}
         {categories.length > 1 && (
@@ -552,6 +816,8 @@ export default function TableOrderPage() {
           </button>
         )}
       </div>
+      )}
+
       {/* Custom CSS Animations */}
       <style jsx global>{`
         @keyframes fadeInUp {
