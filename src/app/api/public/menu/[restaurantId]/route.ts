@@ -55,7 +55,8 @@ export async function GET(
         name: item.name,
         description: item.description,
         price: parseFloat(item.price.toString()),
-        image: item.image
+        image: item.image,
+        category: item.category
       })
       return acc
     }, {} as Record<string, any[]>)

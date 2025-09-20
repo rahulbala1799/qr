@@ -80,7 +80,7 @@ export default function TableOrderPage() {
       return '🍽️'
     }
   }
-
+  
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null)
   const [table, setTable] = useState<Table | null>(null)
   const [menu, setMenu] = useState<Record<string, MenuItem[]>>({})
@@ -103,13 +103,27 @@ export default function TableOrderPage() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
 
-  // Calculate flat array of menu items
+  // Calculate flat array of menu items with category information
   const menuItems = useMemo(() => {
-    return Object.values(menu).flat()
-  }, [menu])
+    const items: MenuItem[] = []
+    console.log('Menu data:', menu)
+    console.log('Categories:', categories)
+    Object.entries(menu).forEach(([category, categoryItems]) => {
+      console.log(`Processing category ${category}:`, categoryItems)
+      categoryItems.forEach(item => {
+        items.push({
+          ...item,
+          category: category
+        })
+      })
+    })
+    console.log('Final menuItems:', items)
+    return items
+  }, [menu, categories])
 
   // Filter menu items based on search and category
   const filteredMenuItems = useMemo(() => {
+    console.log('Filtering - menuItems:', menuItems.length, 'searchQuery:', searchQuery, 'selectedCategory:', selectedCategory)
     let filtered = menuItems
     
     // Filter by search query
@@ -119,13 +133,16 @@ export default function TableOrderPage() {
         (item.description && item.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
         item.category.toLowerCase().includes(searchQuery.toLowerCase())
       )
+      console.log('After search filter:', filtered.length)
     }
     
     // Filter by selected category
     if (selectedCategory && selectedCategory !== 'all') {
       filtered = filtered.filter((item: MenuItem) => item.category === selectedCategory)
+      console.log('After category filter:', filtered.length)
     }
     
+    console.log('Final filtered items:', filtered)
     return filtered
   }, [menuItems, searchQuery, selectedCategory])
 
@@ -591,7 +608,7 @@ export default function TableOrderPage() {
             </div>
             
             {!isTrackingOrder && (
-              <button
+            <button
                 onClick={() => router.push(`/cart/${restaurantId}/${tableId}`)}
                 className={`group relative bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-2xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl ${cartAnimation}`}
               >
@@ -601,12 +618,12 @@ export default function TableOrderPage() {
                   </svg>
                   <span className="font-semibold">Cart ({cart.length})</span>
                 </div>
-                {cart.length > 0 && (
+              {cart.length > 0 && (
                   <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center animate-bounce shadow-lg">
-                    {cart.reduce((sum, item) => sum + item.quantity, 0)}
+                  {cart.reduce((sum, item) => sum + item.quantity, 0)}
                   </div>
-                )}
-              </button>
+              )}
+            </button>
             )}
             
             {isTrackingOrder && (
@@ -878,9 +895,9 @@ export default function TableOrderPage() {
                 </p>
               </div>
             </div>
-          </div>
-        </div>
-      )}
+                    </div>
+                              </div>
+                            )}
 
       {/* World-Class Menu Experience - Hide when tracking order */}
       {!isTrackingOrder && (
@@ -895,7 +912,7 @@ export default function TableOrderPage() {
                     <svg className="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
-                  </div>
+                                </div>
                   <input
                     type="text"
                     placeholder="Search for delicious food..."
@@ -904,17 +921,17 @@ export default function TableOrderPage() {
                     className="block w-full pl-12 pr-4 py-4 border-0 rounded-2xl bg-white/80 backdrop-blur-sm shadow-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-lg placeholder-slate-400"
                   />
                   {searchQuery && (
-                    <button
+                                  <button
                       onClick={() => setSearchQuery('')}
                       className="absolute inset-y-0 right-0 pr-4 flex items-center"
-                    >
+                                  >
                       <svg className="h-5 w-5 text-slate-400 hover:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                       </svg>
-                    </button>
+                                  </button>
                   )}
-                </div>
-              </div>
+                                </div>
+                              </div>
 
               {/* Category Tiles */}
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -931,8 +948,8 @@ export default function TableOrderPage() {
                     <h3 className="text-white font-bold text-lg mb-1">All Items</h3>
                     <p className="text-indigo-100 text-sm">View everything</p>
                     <div className="absolute inset-0 bg-white/20 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  </div>
-                </div>
+                            </div>
+                          </div>
 
                 {/* Category Tiles */}
                 {categories.map((category, index) => (
@@ -950,7 +967,7 @@ export default function TableOrderPage() {
                     <div className="text-center">
                       <div className="text-4xl mb-3 group-hover:scale-110 transition-transform duration-300">
                         {getCategoryIcon(category)}
-                      </div>
+                        </div>
                       <h3 className="text-slate-900 font-bold text-lg mb-1">{category}</h3>
                       <p className="text-slate-600 text-sm">
                         {menu[category]?.length || 0} items
@@ -982,7 +999,7 @@ export default function TableOrderPage() {
                   </div>
                 </div>
               </div>
-            </div>
+          </div>
           ) : (
             /* Menu Items View */
             <div className="space-y-6">
@@ -1022,8 +1039,8 @@ export default function TableOrderPage() {
                     className="block w-full pl-10 pr-3 py-2 border-0 rounded-xl bg-white/80 backdrop-blur-sm shadow-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm placeholder-slate-400"
                   />
                 </div>
-              </div>
-
+                </div>
+                
               {/* Menu Items Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {filteredMenuItems.length === 0 ? (
@@ -1052,7 +1069,7 @@ export default function TableOrderPage() {
                             />
                           </div>
                         )}
-                        <div className="flex-1">
+                            <div className="flex-1">
                           <div className="flex items-start justify-between">
                             <div className="flex-1 mr-4">
                               <h3 className="text-lg font-bold text-slate-900 mb-1">{item.name}</h3>
