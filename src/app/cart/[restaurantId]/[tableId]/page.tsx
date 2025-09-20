@@ -67,7 +67,7 @@ export default function CartPage() {
       setCart(JSON.parse(savedCart))
     }
     fetchData()
-  }, [restaurantId, tableId])
+  }, [restaurantId, tableId, fetchData])
 
   // Calculate estimated preparation time
   useEffect(() => {
@@ -276,7 +276,7 @@ export default function CartPage() {
               </svg>
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Your cart is empty</h2>
-            <p className="text-gray-600 mb-6">Looks like you haven't added any items to your cart yet.</p>
+            <p className="text-gray-600 mb-6">Looks like you haven&apos;t added any items to your cart yet.</p>
             <Link 
               href={`/order/${restaurantId}/${tableId}`}
               className="inline-flex items-center px-6 py-3 bg-primary-600 text-white rounded-full hover:bg-primary-700 transition-colors font-medium"
