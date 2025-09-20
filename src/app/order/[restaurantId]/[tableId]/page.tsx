@@ -54,37 +54,6 @@ export default function TableOrderPage() {
   const [showCart, setShowCart] = useState(false)
   const [activeCategory, setActiveCategory] = useState<string>('')
 
-  useEffect(() => {
-    if (restaurantId && tableId) {
-      fetchData()
-    }
-  }, [restaurantId, tableId, fetchData])
-
-  // Scroll detection for category navigation
-  useEffect(() => {
-    const handleScroll = () => {
-      const categoryElements = categories.map(cat => ({
-        id: cat,
-        element: document.getElementById(`category-${cat}`)
-      })).filter(cat => cat.element)
-
-      if (categoryElements.length === 0) return
-
-      const scrollPosition = window.scrollY + 200 // Offset for sticky header
-
-      for (let i = categoryElements.length - 1; i >= 0; i--) {
-        const category = categoryElements[i]
-        if (category.element && category.element.offsetTop <= scrollPosition) {
-          setActiveCategory(category.id)
-          break
-        }
-      }
-    }
-
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [categories])
-
   const fetchData = useCallback(async () => {
     try {
       // Fetch menu and restaurant data
@@ -120,6 +89,37 @@ export default function TableOrderPage() {
       setIsLoading(false)
     }
   }, [restaurantId, tableId])
+
+  useEffect(() => {
+    if (restaurantId && tableId) {
+      fetchData()
+    }
+  }, [restaurantId, tableId, fetchData])
+
+  // Scroll detection for category navigation
+  useEffect(() => {
+    const handleScroll = () => {
+      const categoryElements = categories.map(cat => ({
+        id: cat,
+        element: document.getElementById(`category-${cat}`)
+      })).filter(cat => cat.element)
+
+      if (categoryElements.length === 0) return
+
+      const scrollPosition = window.scrollY + 200 // Offset for sticky header
+
+      for (let i = categoryElements.length - 1; i >= 0; i--) {
+        const category = categoryElements[i]
+        if (category.element && category.element.offsetTop <= scrollPosition) {
+          setActiveCategory(category.id)
+          break
+        }
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [categories])
 
   const addToCart = (menuItem: MenuItem) => {
     setCart(prev => {
