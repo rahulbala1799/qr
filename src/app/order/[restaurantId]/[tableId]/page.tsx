@@ -457,18 +457,39 @@ export default function TableOrderPage() {
                 </p>
               </div>
             </div>
-            <button
-              onClick={() => router.push(`/cart/${restaurantId}/${tableId}`)}
-              className={`relative bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-all duration-300 hover:scale-105 ${cartAnimation}`}
-            >
-              <span className="hidden sm:inline">Cart ({cart.length})</span>
-              <span className="sm:hidden">Cart</span>
-              {cart.length > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-bounce">
-                  {cart.reduce((sum, item) => sum + item.quantity, 0)}
-                </span>
-              )}
-            </button>
+            {!isTrackingOrder && (
+              <button
+                onClick={() => router.push(`/cart/${restaurantId}/${tableId}`)}
+                className={`relative bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-all duration-300 hover:scale-105 ${cartAnimation}`}
+              >
+                <span className="hidden sm:inline">Cart ({cart.length})</span>
+                <span className="sm:hidden">Cart</span>
+                {cart.length > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-bounce">
+                    {cart.reduce((sum, item) => sum + item.quantity, 0)}
+                  </span>
+                )}
+              </button>
+            )}
+            
+            {isTrackingOrder && (
+              <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-2 bg-green-100 px-3 py-2 rounded-lg">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-sm font-medium text-green-700">TRACKING ORDER</span>
+                </div>
+                <button
+                  onClick={() => {
+                    setIsTrackingOrder(false)
+                    setPlacedOrder(null)
+                    setOrderStatus('')
+                  }}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                >
+                  Order More
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -639,6 +660,35 @@ export default function TableOrderPage() {
                 </p>
               </div>
             </div>
+
+            {/* Action Buttons */}
+            <div className="mt-6 flex flex-col sm:flex-row gap-3">
+              <button
+                onClick={() => {
+                  setIsTrackingOrder(false)
+                  setPlacedOrder(null)
+                  setOrderStatus('')
+                }}
+                className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center justify-center space-x-2"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                <span>Order More Items</span>
+              </button>
+              
+              {orderStatus === 'COMPLETED' && (
+                <button
+                  onClick={() => window.location.reload()}
+                  className="flex-1 bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition-colors font-medium flex items-center justify-center space-x-2"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  <span>Start New Order</span>
+                </button>
+              )}
+            </div>
           </div>
         </div>
       )}
@@ -722,8 +772,9 @@ export default function TableOrderPage() {
             )}
           </div>
 
-          {/* Cart Summary - Desktop Only */}
-          <div className="hidden lg:block lg:col-span-1">
+          {/* Cart Summary - Desktop Only - Hide when tracking order */}
+          {!isTrackingOrder && (
+            <div className="hidden lg:block lg:col-span-1">
             <div className="sticky top-4 bg-white rounded-lg shadow-sm p-6">
               <h2 className="text-xl font-bold text-gray-900 mb-4">Your Order</h2>
               
@@ -778,6 +829,7 @@ export default function TableOrderPage() {
               )}
             </div>
           </div>
+          )}
         </div>
       </div>
       )}
