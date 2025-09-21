@@ -374,15 +374,105 @@ export default function MenuPage() {
                   </svg>
                 )}
               </button>
-              <button
-                onClick={() => setShowCreateForm(true)}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 flex items-center space-x-2 shadow-lg hover:shadow-xl"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-                <span>Add Menu Item</span>
-              </button>
+              <div className="flex items-center space-x-3">
+                {/* Excel Template Download */}
+                <button
+                  onClick={async () => {
+                    try {
+                      const response = await fetch('/api/menu/excel', {
+                        method: 'GET'
+                      })
+                      
+                      if (!response.ok) throw new Error('Download failed')
+                      
+                      // Get the blob
+                      const blob = await response.blob()
+                      
+                      // Create download link
+                      const url = window.URL.createObjectURL(blob)
+                      const a = document.createElement('a')
+                      a.href = url
+                      a.download = 'menu_template.xlsx'
+                      document.body.appendChild(a)
+                      a.click()
+                      window.URL.revokeObjectURL(url)
+                      document.body.removeChild(a)
+                      
+                      showMessage('Template downloaded successfully!', 'success')
+                    } catch (error) {
+                      showMessage('Error downloading template', 'error')
+                    }
+                  }}
+                  className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-all duration-200 flex items-center space-x-2 shadow-lg hover:shadow-xl"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  <span>Download Template</span>
+                </button>
+
+                {/* Excel Upload */}
+                <label className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-all duration-200 flex items-center space-x-2 shadow-lg hover:shadow-xl cursor-pointer">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                  </svg>
+                  <span>Upload Excel</span>
+                  <input
+                    type="file"
+                    accept=".xlsx,.xls"
+                    className="hidden"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0]
+                      if (!file) return
+                      
+                      try {
+                        const formData = new FormData()
+                        formData.append('file', file)
+                        
+                        const response = await fetch('/api/menu/excel', {
+                          method: 'POST',
+                          body: formData
+                        })
+                        
+                        const data = await response.json()
+                        
+                        if (!response.ok) {
+                          if (data.details) {
+                            // Show validation errors
+                            const errorMessage = data.details
+                              .map((error: any) => 
+                                `Row ${error.row}: ${error.errors.join(', ')}`
+                              )
+                              .join('\n')
+                            showMessage(`Validation errors:\n${errorMessage}`, 'error')
+                          } else {
+                            throw new Error(data.error || 'Upload failed')
+                          }
+                        } else {
+                          showMessage(data.message, 'success')
+                          fetchMenuData() // Refresh the menu items
+                        }
+                      } catch (error) {
+                        showMessage('Error uploading Excel file', 'error')
+                      }
+                      
+                      // Clear the input
+                      e.target.value = ''
+                    }}
+                  />
+                </label>
+
+                {/* Add Menu Item */}
+                <button
+                  onClick={() => setShowCreateForm(true)}
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 flex items-center space-x-2 shadow-lg hover:shadow-xl"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  <span>Add Menu Item</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
